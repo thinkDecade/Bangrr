@@ -147,6 +147,7 @@ function FeedPage() {
                 post={post}
                 priceHistory={priceHistory[post.id]}
                 onTradeComplete={handleRefresh}
+                otherPosts={otherPostsSummary}
               />
             ))}
           </div>
