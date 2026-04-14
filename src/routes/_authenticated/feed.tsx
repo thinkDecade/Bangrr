@@ -26,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/feed")({
 function FeedPage() {
   const queryClient = useQueryClient();
   const [showSidebar, setShowSidebar] = useState(false);
+  const [agentsRunning, setAgentsRunning] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["feed-posts"],
