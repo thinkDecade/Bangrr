@@ -319,6 +319,19 @@ export type Database = {
         }
         Returns: Json
       }
+      check_and_create_clip: {
+        Args: {
+          _action: string
+          _actor_name: string
+          _actor_type: string
+          _amount: number
+          _new_price: number
+          _old_price: number
+          _post_id: string
+          _price_change_pct: number
+        }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
