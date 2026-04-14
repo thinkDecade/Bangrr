@@ -339,6 +339,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      process_rotation: {
+        Args: { _amount: number; _from_post_id: string; _to_post_id: string }
+        Returns: Json
+      }
       process_trade: {
         Args: { _action: string; _amount: number; _post_id: string }
         Returns: Json
