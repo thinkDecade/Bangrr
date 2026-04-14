@@ -4,9 +4,11 @@ import { PostCard, type PostData } from "@/components/feed/PostCard";
 import { CreatePost } from "@/components/feed/CreatePost";
 import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts, getPriceHistory } from "@/lib/feed-functions";
+import { runAgentCycle } from "@/lib/agent-engine";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Activity } from "lucide-react";
+import { ArrowLeft, Activity, Bot } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({
