@@ -23,10 +23,11 @@ export interface PostData {
 
 interface PostCardProps {
   post: PostData;
+  priceHistory?: number[];
   onTradeComplete?: () => void;
 }
 
-export function PostCard({ post, onTradeComplete }: PostCardProps) {
+export function PostCard({ post, priceHistory, onTradeComplete }: PostCardProps) {
   const price = post.current_price ?? 1;
   const changePct = post.price_change_pct ?? 0;
   const volume = post.volume ?? 0;
@@ -35,13 +36,10 @@ export function PostCard({ post, onTradeComplete }: PostCardProps) {
   const displayName = profile?.display_name || profile?.username || "anon";
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { addSuffix: true });
 
-  // Mock sparkline data (will use real price_history later)
-  const sparkData = Array.from({ length: 20 }, (_, i) => {
-    const base = price * 0.9;
-    const range = price * 0.2;
-    return base + Math.sin(i * 0.8 + price) * range * 0.5 + Math.random() * range * 0.3;
-  });
-  sparkData.push(price);
+  // Use real price history if available, otherwise generate mock
+  const sparkData = priceHistory && priceHistory.length > 1
+    ? priceHistory
+    : generateMockSparkline(price);
 
   return (
     <motion.div
@@ -94,7 +92,21 @@ export function PostCard({ post, onTradeComplete }: PostCardProps) {
       </div>
 
       {/* Trade actions */}
-      <TradeActions postId={post.id} onTradeComplete={onTradeComplete} />
+      <TradeActions
+        postId={post.id}
+        currentPrice={price}
+        onTradeComplete={onTradeComplete}
+      />
     </motion.div>
   );
+}
+
+function generateMockSparkline(price: number): number[] {
+  const data = Array.from({ length: 20 }, (_, i) => {
+    const base = price * 0.9;
+    const range = price * 0.2;
+    return base + Math.sin(i * 0.8 + price) * range * 0.5 + Math.random() * range * 0.3;
+  });
+  data.push(price);
+  return data;
 }
