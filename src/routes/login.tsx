@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ConnectButton } from "@particle-network/connectkit";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search) => ({
@@ -112,6 +113,16 @@ function LoginPage() {
           >
             {loading ? "entering..." : "APE IN →"}
           </Button>
+
+          <div className="relative flex items-center gap-4 py-2">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-mono text-muted-foreground uppercase">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <div className="flex justify-center [&_button]:!w-full [&_button]:!font-mono [&_button]:!uppercase [&_button]:!tracking-wider">
+            <ConnectButton label="CONNECT WALLET →" />
+          </div>
 
           <div className="flex items-center justify-between text-sm">
             <Link

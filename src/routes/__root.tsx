@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRouteWithContext, HeadContent, Scripts, useRout
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuth, type AuthState } from "@/hooks/use-auth";
 import { useEffect } from "react";
+import { ParticleProvider } from "@/components/particle/ParticleProvider";
 
 import appCss from "../styles.css?url";
 
@@ -91,7 +92,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <ParticleProvider>
+        <Outlet />
+      </ParticleProvider>
     </QueryClientProvider>
   );
 }
