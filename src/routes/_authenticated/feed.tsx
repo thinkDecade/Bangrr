@@ -4,6 +4,7 @@ import { PostCard, type PostData } from "@/components/feed/PostCard";
 import { CreatePost } from "@/components/feed/CreatePost";
 import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts, getPriceHistory } from "@/lib/feed-functions";
+import { getEarlyApeNfts } from "@/lib/early-ape-functions";
 import { PriceTicker } from "@/components/feed/PriceTicker";
 import { runAgentCycle } from "@/lib/agent-engine";
 import { useState, useMemo } from "react";
@@ -49,6 +50,21 @@ function FeedPage() {
   });
 
   const priceHistory = (priceData?.priceHistory ?? {}) as Record<string, number[]>;
+
+  // Fetch Early Ape NFTs for visible posts
+  const { data: nftData } = useQuery({
+    queryKey: ["early-ape-nfts", postIds],
+    queryFn: () => getEarlyApeNfts({ data: { postIds } }),
+    enabled: postIds.length > 0,
+  });
+
+  const earlyApeNfts = useMemo(() => {
+    const map: Record<string, { token_id: number; entry_price: number; qualifying_price: number }> = {};
+    for (const nft of (nftData?.nfts ?? []) as Array<{ post_id: string; token_id: number; entry_price: number; qualifying_price: number }>) {
+      map[nft.post_id] = nft;
+    }
+    return map;
+  }, [nftData]);
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
@@ -152,6 +168,7 @@ function FeedPage() {
                 priceHistory={priceHistory[post.id]}
                 onTradeComplete={handleRefresh}
                 otherPosts={otherPostsSummary}
+                earlyApeNft={earlyApeNfts[post.id] ?? null}
               />
             ))}
           </div>

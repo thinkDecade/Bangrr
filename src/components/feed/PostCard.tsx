@@ -3,6 +3,7 @@ import { Sparkline } from "./Sparkline";
 import { TradeActions } from "./TradeActions";
 import { TokenBadge } from "./TokenDeployStatus";
 import { SummonAgent } from "./SummonAgent";
+import { EarlyApeBadge } from "./EarlyApeBadge";
 import { formatDistanceToNow } from "date-fns";
 
 interface PostProfile {
@@ -24,14 +25,21 @@ export interface PostData {
   profiles: PostProfile | null;
 }
 
+interface EarlyApeNft {
+  token_id: number;
+  entry_price: number;
+  qualifying_price: number;
+}
+
 interface PostCardProps {
   post: PostData;
   priceHistory?: number[];
   onTradeComplete?: () => void;
   otherPosts?: Array<{ id: string; content: string; current_price: number | null }>;
+  earlyApeNft?: EarlyApeNft | null;
 }
 
-export function PostCard({ post, priceHistory, onTradeComplete, otherPosts }: PostCardProps) {
+export function PostCard({ post, priceHistory, onTradeComplete, otherPosts, earlyApeNft }: PostCardProps) {
   const price = post.current_price ?? 1;
   const changePct = post.price_change_pct ?? 0;
   const volume = post.volume ?? 0;
@@ -81,6 +89,15 @@ export function PostCard({ post, priceHistory, onTradeComplete, otherPosts }: Po
 
       {/* Content */}
       <p className="text-base leading-relaxed">{post.content}</p>
+
+      {/* Early Ape NFT badge */}
+      {earlyApeNft && (
+        <EarlyApeBadge
+          tokenId={earlyApeNft.token_id}
+          entryPrice={earlyApeNft.entry_price}
+          qualifyingPrice={earlyApeNft.qualifying_price}
+        />
+      )}
 
       {/* Token badge */}
       {post.token_address && (

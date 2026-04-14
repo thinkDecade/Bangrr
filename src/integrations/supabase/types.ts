@@ -252,6 +252,44 @@ export type Database = {
           },
         ]
       }
+      early_ape_nfts: {
+        Row: {
+          entry_price: number
+          id: string
+          minted_at: string
+          post_id: string
+          qualifying_price: number
+          token_id: number | null
+          user_id: string
+        }
+        Insert: {
+          entry_price: number
+          id?: string
+          minted_at?: string
+          post_id: string
+          qualifying_price: number
+          token_id?: number | null
+          user_id: string
+        }
+        Update: {
+          entry_price?: number
+          id?: string
+          minted_at?: string
+          post_id?: string
+          qualifying_price?: number
+          token_id?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "early_ape_nfts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leveraged_positions: {
         Row: {
           action: string
@@ -551,6 +589,10 @@ export type Database = {
           _post_id: string
           _price_change_pct: number
         }
+        Returns: undefined
+      }
+      check_early_ape_nft: {
+        Args: { _new_price: number; _post_id: string }
         Returns: undefined
       }
       check_liquidations: { Args: { _post_id: string }; Returns: Json }
