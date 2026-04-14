@@ -54,6 +54,7 @@ function SignupPage() {
           </p>
           <Link
             to="/login"
+            search={{ redirect: "/" }}
             className="text-primary hover:text-primary/80 font-mono transition-colors"
           >
             → go to login
@@ -145,6 +146,7 @@ function SignupPage() {
           <div className="text-center text-sm">
             <Link
               to="/login"
+              search={{ redirect: "/" }}
               className="text-primary hover:text-primary/80 font-mono transition-colors"
             >
               already in? login

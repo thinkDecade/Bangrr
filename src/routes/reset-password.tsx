@@ -93,6 +93,7 @@ function ResetPasswordPage() {
           </h1>
           <Link
             to="/login"
+            search={{ redirect: "/" }}
             className="text-primary hover:text-primary/80 font-mono transition-colors"
           >
             → back to login
@@ -192,6 +193,7 @@ function ResetPasswordPage() {
           <div className="text-center text-sm">
             <Link
               to="/login"
+              search={{ redirect: "/" }}
               className="text-muted-foreground hover:text-foreground font-mono transition-colors"
             >
               ← back to login
