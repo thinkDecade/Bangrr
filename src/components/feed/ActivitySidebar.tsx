@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ClipsFeed } from "./ClipsFeed";
+import { AgentWarsLeaderboard } from "./AgentWarsLeaderboard";
 import { formatDistanceToNow } from "date-fns";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -102,6 +103,9 @@ export function ActivitySidebar() {
       <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">
         Live Activity
       </h3>
+      <div className="mb-4">
+        <AgentWarsLeaderboard />
+      </div>
       <div className="mb-4">
         <ClipsFeed />
       </div>
