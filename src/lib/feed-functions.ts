@@ -275,3 +275,40 @@ export const getActivityFeed = createServerFn({ method: "POST" })
 
     return { activities: activities ?? [], error: null };
   });
+
+export const executeRotation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    z.object({
+      fromPostId: z.string().uuid(),
+      toPostId: z.string().uuid(),
+      amount: z.number().min(0.01).max(10000),
+    })
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+
+    const { data: result, error } = await supabase.rpc("process_rotation", {
+      _from_post_id: data.fromPostId,
+      _to_post_id: data.toPostId,
+      _amount: data.amount,
+    });
+
+    if (error) {
+      console.error("executeRotation RPC error:", error);
+      return { success: false, error: error.message };
+    }
+
+    const parsed = result as {
+      success: boolean;
+      error?: string;
+      from_new_price?: number;
+      to_new_price?: number;
+    };
+
+    if (!parsed.success) {
+      return { success: false, error: parsed.error ?? "Rotation failed" };
+    }
+
+    return { success: true, error: null };
+  });
