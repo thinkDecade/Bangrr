@@ -6,7 +6,6 @@ import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts } from "@/lib/feed-functions";
 import { useState } from "react";
 import { ArrowLeft, Activity } from "lucide-react";
-import { ArrowLeft, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/_authenticated/feed")({
