@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ConnectButton } from "@particle-network/connectkit";
+import { useWalletProfile } from "@/hooks/use-wallet-profile";
 
 export const Route = createFileRoute("/signup")({
   beforeLoad: ({ context }) => {
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/signup")({
 function SignupPage() {
   const { auth } = Route.useRouteContext();
   const navigate = Route.useNavigate();
+  useWalletProfile();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
