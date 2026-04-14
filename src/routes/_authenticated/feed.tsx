@@ -6,7 +6,7 @@ import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts, getPriceHistory } from "@/lib/feed-functions";
 import { runAgentCycle } from "@/lib/agent-engine";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Activity, Bot } from "lucide-react";
+import { ArrowLeft, Activity, Bot, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -92,6 +92,12 @@ function FeedPage() {
               <Bot className={`w-3.5 h-3.5 ${agentsRunning ? "animate-spin" : ""}`} />
               {agentsRunning ? "RUNNING…" : "RUN AGENTS"}
             </button>
+            <Link
+              to="/profile"
+              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
+            >
+              <User className="w-5 h-5" />
+            </Link>
             <button
               onClick={() => setShowSidebar(!showSidebar)}
               className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
