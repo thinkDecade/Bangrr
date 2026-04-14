@@ -1,146 +1,87 @@
 
 
-# 🧨 BANGRRR — Revised Build Plan (v2)
+# Homepage Upgrade — PRD v2 Alignment
 
-## What Changed
-- **Visual direction**: Bright chaotic futurism (NOT dark minimal) — neon colors on deep animated gradient backgrounds
-- **New feature: Clip System** — virality engine where moments become shareable "attention weapons"
-- **New feature: Rotation Engine** — swap attention between assets (DEX for attention)
-- **New feature: BNB Chain + Four.meme** — real testnet integration for token bonding curves and liquidity
-- **Full feature set** build, not phased MVP
+## What's Changing
 
----
+### Branding consistency
+- All references to "BANGRRR" → **"BANGRR"** (two R's, not three) across every component
+- GlitchLogo text updated to "BANGRR"
 
-## Phase 1: Foundation — Theme, Brand System & Landing Page
+### New integrations to showcase (from PRD v2)
+- **Unibase** — Agent Memory layer (on-chain reputation for agents)
+- **Pieverse** — Gasless trades via x402 protocol
+- **MYX Finance** — Leveraged attention positions (bonus feature)
+- **Four.meme** — MYTH auto-deploys tokens from narratives
+- **Early Ape NFT** — First APE into a post that later 5x+ = auto-minted NFT
 
-**Design system overhaul** in `styles.css`:
-- Neon color palette: Volt Green (#00FF85), Signal Red (#FF2E2E), Hyper Purple (#8B5CFF), Ice Cyan (#00D9FF), Alert Yellow (#FFD400)
-- Deep animated gradient backgrounds with noise texture
-- Custom CSS keyframes: price-snap, jitter, shockwave-pulse, collapse-ripple, gradient-drift
-- Inter font loaded via Google Fonts
+### Voice & messaging fixes
+- Remove "front-running you" / "they're your competition" language from agent section
+- Reframe agents as **market participants that create action** — they make the market alive, not adversarial
+- Add new concept: **"Appease the Viral Agents"** — users can appeal to agents to amplify their posts (teased as coming soon)
 
-**Landing page** (`/`):
-- BGRR ticker logo with glitch wordmark animation
-- Animated gradient hero: "Attention is the asset. Trade it."
-- Simulated live price ticker with fake posts moving
-- 3 agent introduction cards (RUSH ⚡, ORACLE 👁, MYTH 🌀) with personality quotes
-- CTA: "Enter the Market" → `/feed`
+### New feature: Agent War mechanic
+- RUSH vs ORACLE take opposing positions — community picks sides
+- Losing agent gets liquidated visibly — spectator sport
 
 ---
 
-## Phase 2: Database Schema & Auth (Lovable Cloud)
+## Files Modified
 
-**Enable Lovable Cloud** and create tables:
-- `profiles` — username, display_name, avatar_url, total_pnl, wallet_address
-- `posts` — creator_id, content, current_price, price_change_pct, volume, token_address (Four.meme)
-- `trades` — user_id, post_id, action (APE/EXIT), amount, price_at_trade
-- `price_history` — post_id, price, recorded_at (for sparklines)
-- `rotations` — user_id, from_post_id, to_post_id, amount, price_from, price_to
-- `clips` — post_id, clip_type (APE_MOMENT/ORACLE_CALL/MYTH_DROP/VOLATILITY_SPIKE/AGENT_WAR), trigger_event, created_at
-- `activity_feed` — actor_type (user/agent/system), actor_name, action, post_id, metadata
-- `user_roles` — standard security pattern (admin/user)
+### 1. `src/components/landing/GlitchLogo.tsx`
+- Change "BANGRRR" → "BANGRR" in all text layers
 
-**Auth**: Email + password with Bangrr-styled login/signup (neon borders, glitch effects, system voice on errors: "Too slow.", "You missed it.")
+### 2. `src/components/landing/HeroSection.tsx`
+- Update tagline copy — keep degen voice, remove adversarial agent framing
+- Add tech stack badges: BNB Chain, Four.meme, Unibase, Pieverse
+- Fix branding to "BANGRR"
 
----
+### 3. `src/components/landing/ConceptSlider.tsx`
+- Update agent slide: remove "front-runs" language, reframe as "3 AI agents creating chaos in the market — they APE, EXIT, create content, and make things move"
+- Add new slide: **"what are Agent Wars?"** — RUSH vs ORACLE opposing positions, community picks sides
+- Add new slide: **"what's an Early Ape NFT?"** — first APE into a post that 5x+ = on-chain proof
+- Add new slide: **"gasless trading?"** — Pieverse x402 protocol, no gas friction
+- Fix branding references
 
-## Phase 3: Core Trading Feed (`/feed`)
+### 4. `src/components/landing/AgentCards.tsx`
+- Remove "your competition" framing from parent section
+- Add personality detail: agents have on-chain memory (Unibase), reputation that builds over time
+- Add "Agent War" teaser — when RUSH and ORACLE disagree, chaos ensues
+- New card detail: each agent shows their archetype (Trickster, Analyst, Instigator per PRD)
+- Tease "Appease the Agents" feature — a subtle badge/tag: "🔮 coming soon: summon agents to boost your post"
 
-**Post cards** (tradable assets):
-- Creator avatar + name, dominant price (48-72px bold), % change (green/red)
-- Content (opinion/meme text)
-- APE button (green shockwave pulse on click) + EXIT button (red collapse ripple)
-- Volume display, sparkline from price_history
-- Jitter animation on volatile posts
+### 5. `src/components/landing/FeatureShowcase.tsx`
+- Add new features:
+  - **Gasless Trading (Pieverse)** — agents and users trade without gas via x402
+  - **Agent Wars** — RUSH vs ORACLE opposing positions, community picks sides, liquidation events
+  - **Early Ape NFT** — BEP-721 auto-minted when you're first to APE a post that 5x+
+  - **Agent Memory (Unibase)** — agents have persistent on-chain reputation
+- Update existing feature descriptions to match PRD v2 language
+- Update BNB Chain card to mention Four.meme MYTH auto-deploying tokens
 
-**Feed behavior**:
-- Real-time price updates via Supabase realtime subscriptions
-- Dynamic reordering by momentum (price change velocity)
-- Smooth layout transitions when posts move
+### 6. `src/components/landing/SystemVoiceCTA.tsx`
+- Fix branding
+- Keep APE/EXIT/ROTATE/CLIP vocabulary badges
 
-**Trading server functions**:
-- APE: increase price, record trade, update volume, trigger green animation
-- EXIT: decrease price, record trade, trigger red animation
-- Price calculation based on supply/demand from trade history
+### 7. `src/routes/index.tsx`
+- Update meta tags to "BANGRR" (not BANGRRR)
+- Update agents section heading: remove "they're your competition" — replace with "they're already in the market"
+- Add new section between agents and features: **"Appease the Gods"** teaser — "coming soon: summon agents to amplify your post. sacrifice attention. gain virality." with a "notify me" style CTA
 
----
+### 8. `src/components/landing/MockTicker.tsx`
+- Fix any "BANGRRR" references to "BANGRR"
 
-## Phase 4: AI Agents (Server Functions + AI Gateway)
+### 9. `src/styles.css`
+- No structural changes needed — existing theme supports all updates
 
-Three agent server functions that run periodically:
-- **RUSH ⚡**: Monitors trending posts, auto-APEs into momentum, creates volatility spikes. High frequency.
-- **ORACLE 👁**: Analyzes posts for early value signals, takes positions before trends. Low frequency, high conviction.
-- **MYTH 🌀**: Generates new provocative posts using AI, injects narratives, seeds new tradable assets.
-
-Agent actions appear in activity_feed with personality-matched messages.
-Triggered via scheduled API calls or manual trigger button for demo.
-
----
-
-## Phase 5: Clip System (Virality Engine)
-
-**Auto-clip detection** (server function):
-- Monitors for clip-worthy events: price spikes >20%, rapid APE sequences, agent actions, narrative injections
-- Creates clip records with type classification (APE MOMENT, ORACLE CALL, MYTH DROP, VOLATILITY SPIKE, AGENT WAR)
-
-**Clip UI** on post cards:
-- Clip badge/indicator when a moment is captured
-- Clip feed/gallery showing recent viral moments
-- Clip → Attention ↑ → Price ↑ feedback loop (clips boost the post's visibility/price)
+### 10. Memory updates
+- Update `mem://features/bangrr-core` with Unibase, Pieverse, MYX, Agent Wars, Early Ape NFT
+- Update `mem://index.md` to reflect new feature set
 
 ---
 
-## Phase 6: Rotation Engine (DEX for Attention)
-
-**Rotation mechanic**:
-- Swap attention from Asset A → Asset B without exiting to cash
-- UI: select source post, select target post, set amount, execute rotation
-- Server function: decrease source price, increase target price, record rotation
-- Rotation history on user profile
-
-**Rotation UI**: Swap-style interface (like DEX) with the two assets, amounts, and price impact preview.
-
----
-
-## Phase 7: BNB Chain + Four.meme Integration (Testnet)
-
-- Connect to BNB testnet via ethers.js/viem (browser-compatible)
-- Four.meme testnet integration for token creation with bonding curves
-- Each post can have an associated token (token_address in posts table)
-- Display on-chain price alongside attention price
-- Wallet connect button on profile
-
----
-
-## Phase 8: Leaderboard & Activity Systems
-
-**Activity ticker** (persistent sidebar/bottom bar):
-- Real-time scrolling feed of all market activity
-- System messages in Bangrr voice: "MARKET SPIKING", "LIQUIDITY SHIFT", "YOU ARE LATE"
-- Agent and user actions with emoji indicators
-
-**Leaderboard** (`/leaderboard`):
-- Top gaining posts (biggest price movers)
-- Most active agents
-- Highest volatility assets
-- User PnL rankings
-
----
-
-## Phase 9: Motion Polish & System Voice
-
-- Animated gradient backgrounds (slow-moving "market atmosphere")
-- Price snap animations with overshoot
-- APE green shockwave, EXIT red collapse
-- Feed reorder smooth transitions
-- Volatile post jitter CSS animation
-- Toast notifications in Bangrr voice: "It's moving.", "You're late.", "This is printing."
-- Loading states that feel alive
-
----
-
-## Memory Updates (will save after approval)
-- Update brand design memory to bright chaotic futurism direction
-- Update core features memory with clips, rotation, BNB integration
-- Update project index with all feature references
+## Technical Notes
+- No new packages needed — existing Swiper, Framer Motion, and Tailwind handle everything
+- All changes are component-level content and copy updates
+- New "Appease the Gods" section uses existing motion patterns (framer-motion fade-in)
 
