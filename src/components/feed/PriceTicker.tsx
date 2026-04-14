@@ -36,7 +36,7 @@ export function PriceTicker() {
             const idx = prev.findIndex((p) => p.id === updated.id);
             if (idx === -1) return prev;
             const next = [...prev];
-            next[idx] = mapPost(updated);
+            next[idx] = mapPost(updated as unknown as Record<string, unknown>);
             return next;
           });
         }
