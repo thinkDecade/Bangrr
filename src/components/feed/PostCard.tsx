@@ -28,7 +28,7 @@ interface PostCardProps {
   otherPosts?: Array<{ id: string; content: string; current_price: number | null }>;
 }
 
-export function PostCard({ post, priceHistory, onTradeComplete }: PostCardProps) {
+export function PostCard({ post, priceHistory, onTradeComplete, otherPosts }: PostCardProps) {
   const price = post.current_price ?? 1;
   const changePct = post.price_change_pct ?? 0;
   const volume = post.volume ?? 0;
