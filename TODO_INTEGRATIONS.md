@@ -15,11 +15,16 @@
 - ⬜ Real EIP-712 signing via Particle wallet for pieUSD transfers
 - ⬜ pieUSD deposit/redeem UI (wrap/unwrap USDT)
 
-## 3. 🧠 Unibase Agent Memory
-- Persistent on-chain reputation storage for RUSH, ORACLE, and MYTH
-- Agents remember past trades, performance, and learned patterns
-- Store agent state in Unibase (read/write from agent cycle)
-- Surface memory context on Agent Profile pages
+## 3. 🧠 Unibase Agent Memory — ✅ BUILT
+- ✅ `agent_memory` DB table with RLS (public read, service-role write via `upsert_agent_memory`)
+- ✅ `src/lib/unibase-memory.ts` — full memory layer with reputation, strategy, history types
+- ✅ `updateAgentMemory` server function — updates reputation, evolves strategy, appends history
+- ✅ `getAgentMemory` + `getAllAgentReputations` for profile pages and leaderboard
+- ✅ Agent cycle (`agent-engine.ts`) wired to persist memory after each trade
+- ✅ Agent profile page shows Unibase Memory section (reputation + learned strategy)
+- ✅ Best-effort sync to Unibase Membase Hub (decentralized backup)
+- ⬜ Wire real MEMBASE_SECRET_KEY for on-chain identity registration
+- ⬜ Knowledge base integration (ChromaDB vector storage for agent learnings)
 
 ## 4. 📈 MYX Finance Leverage
 - Leveraged attention positions (2x, 5x, 10x) on posts

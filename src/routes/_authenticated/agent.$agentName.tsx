@@ -1,8 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getAgentProfile } from "@/lib/agent-stats-functions";
+import { getAgentMemory } from "@/lib/unibase-memory";
 import { motion } from "framer-motion";
-import { ArrowLeft, TrendingUp, TrendingDown, Zap, Target, BarChart3, Clock, Flame, Shield } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, Zap, Target, BarChart3, Clock, Flame, Shield, Brain } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell } from "recharts";
 
 const VALID_AGENTS = ["RUSH", "ORACLE", "MYTH"] as const;
@@ -45,6 +46,12 @@ function AgentProfilePage() {
   const { data, isLoading } = useQuery({
     queryKey: ["agent-profile", normalizedName],
     queryFn: () => getAgentProfile({ data: { agentName: normalizedName } }),
+    enabled: isValid,
+  });
+
+  const { data: memoryData } = useQuery({
+    queryKey: ["agent-memory", normalizedName],
+    queryFn: () => getAgentMemory({ data: { agentName: normalizedName } }),
     enabled: isValid,
   });
 
@@ -288,6 +295,81 @@ function AgentProfilePage() {
                 </div>
               )}
             </motion.div>
+
+            {/* Unibase Memory */}
+            {memoryData && (memoryData.reputation || memoryData.strategy) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 }}
+                className="glass-card rounded-2xl p-4"
+              >
+                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-hyper" />
+                  Unibase Memory
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Reputation Memory */}
+                  {memoryData.reputation && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-bold text-muted-foreground uppercase">Reputation</p>
+                      <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                        <div className="bg-surface/50 rounded-lg p-2">
+                          <span className="text-muted-foreground">Win Rate</span>
+                          <p className="text-volt font-bold">{(memoryData.reputation.winRate * 100).toFixed(1)}%</p>
+                        </div>
+                        <div className="bg-surface/50 rounded-lg p-2">
+                          <span className="text-muted-foreground">Streak</span>
+                          <p className="text-alert font-bold">{memoryData.reputation.currentStreak} 🔥</p>
+                        </div>
+                        <div className="bg-surface/50 rounded-lg p-2">
+                          <span className="text-muted-foreground">Best</span>
+                          <p className="text-volt font-bold">+{memoryData.reputation.bestTrade.toFixed(2)}</p>
+                        </div>
+                        <div className="bg-surface/50 rounded-lg p-2">
+                          <span className="text-muted-foreground">Worst</span>
+                          <p className="text-signal font-bold">{memoryData.reputation.worstTrade.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Strategy Memory */}
+                  {memoryData.strategy && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-bold text-muted-foreground uppercase">Learned Strategy</p>
+                      <div className="space-y-1.5 text-xs font-mono">
+                        <div className="bg-surface/50 rounded-lg p-2 flex justify-between">
+                          <span className="text-muted-foreground">Preferred</span>
+                          <span className={`font-bold ${memoryData.strategy.preferredAction === "APE" ? "text-volt" : memoryData.strategy.preferredAction === "EXIT" ? "text-signal" : "text-cyan"}`}>
+                            {memoryData.strategy.preferredAction}
+                          </span>
+                        </div>
+                        <div className="bg-surface/50 rounded-lg p-2 flex justify-between">
+                          <span className="text-muted-foreground">Momentum Bias</span>
+                          <span className="text-foreground font-bold">{memoryData.strategy.momentumBias > 0 ? "+" : ""}{memoryData.strategy.momentumBias.toFixed(2)}</span>
+                        </div>
+                        <div className="bg-surface/50 rounded-lg p-2 flex justify-between">
+                          <span className="text-muted-foreground">Avg Size</span>
+                          <span className="text-foreground font-bold">×{memoryData.strategy.avgTradeSize.toFixed(1)}</span>
+                        </div>
+                        {memoryData.strategy.learnings.length > 0 && (
+                          <div className="bg-surface/50 rounded-lg p-2">
+                            <span className="text-muted-foreground block mb-1">Learnings</span>
+                            {memoryData.strategy.learnings.map((l, i) => (
+                              <p key={i} className="text-[10px] text-foreground/70">• {l}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <p className="text-[9px] text-muted-foreground/40 mt-3 text-right font-mono">
+                  Backed by Unibase Membase Hub · Decentralized memory layer
+                </p>
+              </motion.div>
+            )}
 
             {/* Navigation to other agents */}
             <motion.div
