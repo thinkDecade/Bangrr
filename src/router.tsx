@@ -1,5 +1,7 @@
 import { createRouter, useRouter } from "@tanstack/react-router";
+import { QueryClient } from "@tanstack/react-query";
 import { routeTree } from "./routeTree.gen";
+import type { AuthState } from "@/hooks/use-auth";
 
 function DefaultErrorComponent({
   error,
@@ -62,10 +64,32 @@ function DefaultErrorComponent({
   );
 }
 
+export interface RouterContext {
+  auth: AuthState;
+  queryClient: QueryClient;
+}
+
+const defaultAuth: AuthState = {
+  isAuthenticated: false,
+  user: null,
+  session: null,
+  isLoading: true,
+  login: async () => {},
+  signup: async () => {},
+  logout: async () => {},
+  resetPassword: async () => {},
+  updatePassword: async () => {},
+};
+
 export const getRouter = () => {
+  const queryClient = new QueryClient();
+
   const router = createRouter({
     routeTree,
-    context: {},
+    context: {
+      auth: defaultAuth,
+      queryClient,
+    },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: DefaultErrorComponent,
@@ -73,3 +97,9 @@ export const getRouter = () => {
 
   return router;
 };
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: ReturnType<typeof getRouter>;
+  }
+}

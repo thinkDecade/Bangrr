@@ -1,6 +1,14 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useAuth, type AuthState } from "@/hooks/use-auth";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
+
+export interface RouterContext {
+  auth: AuthState;
+  queryClient: QueryClient;
+}
 
 function NotFoundComponent() {
   return (
@@ -26,19 +34,18 @@ function NotFoundComponent() {
   );
 }
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "BANGRRR — Attention is the Asset" },
+      { title: "BANGRR — Attention is the Asset" },
       { name: "description", content: "Trade attention. APE opinions. EXIT narratives. The market for what matters." },
-      { name: "author", content: "BANGRRR" },
-      { property: "og:title", content: "BANGRRR — Attention is the Asset" },
+      { name: "author", content: "BANGRR" },
+      { property: "og:title", content: "BANGRR — Attention is the Asset" },
       { property: "og:description", content: "Trade attention. APE opinions. EXIT narratives. The market for what matters." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -67,5 +74,24 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  const { queryClient } = Route.useRouteContext();
+  const auth = useAuth();
+  const router = useRouter();
+
+  // Update router context when auth state changes
+  useEffect(() => {
+    router.update({
+      context: {
+        ...router.options.context,
+        auth,
+      },
+    });
+    router.invalidate();
+  }, [auth.isAuthenticated, auth.isLoading]);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
+  );
 }
