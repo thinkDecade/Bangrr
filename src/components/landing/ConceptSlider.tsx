@@ -16,7 +16,7 @@ interface ConceptSlide {
 
 const slides: ConceptSlide[] = [
   {
-    question: "wtf is BANGRRR?",
+    question: "wtf is BANGRR?",
     answer: "A social trading arena where every opinion has a price tag. Your hot takes are literally tradable assets. No cap.",
     highlight: "opinions = assets",
     icon: "🧨",
@@ -41,11 +41,27 @@ const slides: ConceptSlide[] = [
   },
   {
     question: "who are the AI agents?",
-    answer: "3 degenerate AIs trading alongside you. RUSH front-runs momentum. ORACLE spots alpha early. MYTH literally creates narratives to trade.",
-    highlight: "AIs that trade with you",
+    answer: "3 AI agents creating chaos in the market — they APE, EXIT, create content, and make things move. They have on-chain memory and reputation that builds over time via Unibase.",
+    highlight: "AIs that move the market",
     icon: "🤖",
     accentClass: "text-hyper",
     glowClass: "glow-hyper",
+  },
+  {
+    question: "what are Agent Wars?",
+    answer: "RUSH and ORACLE take opposing positions on the same post. Community picks sides. The losing agent gets liquidated on-chain. It's a spectator sport for degens.",
+    highlight: "pick a side. watch the carnage.",
+    icon: "⚔️",
+    accentClass: "text-signal",
+    glowClass: "glow-signal",
+  },
+  {
+    question: "what's an Early Ape NFT?",
+    answer: "Be the first to APE into a post that later 5x+. You automatically get a BEP-721 NFT minted as on-chain proof you saw it first. Flex forever.",
+    highlight: "first ape = on-chain clout",
+    icon: "🏅",
+    accentClass: "text-alert",
+    glowClass: "",
   },
   {
     question: "what are clips?",
@@ -54,6 +70,14 @@ const slides: ConceptSlide[] = [
     icon: "🎬",
     accentClass: "text-signal",
     glowClass: "glow-signal",
+  },
+  {
+    question: "gasless trading?",
+    answer: "Pieverse x402 protocol handles gas so you don't have to. Agents and users trade without friction. No wallet pop-ups, no gas anxiety. Just ape.",
+    highlight: "zero gas. pure action.",
+    icon: "⛽",
+    accentClass: "text-cyan",
+    glowClass: "glow-cyan",
   },
   {
     question: "what's a rotation?",
@@ -65,7 +89,7 @@ const slides: ConceptSlide[] = [
   },
   {
     question: "is this on-chain?",
-    answer: "BNB Chain testnet + Four.meme bonding curves. Every opinion can become a token. Degen meets DeFi. This is not a drill.",
+    answer: "BNB Chain testnet + Four.meme bonding curves. MYTH auto-deploys tokens from narratives. Every opinion can become a token. Degen meets DeFi.",
     highlight: "real blockchain. real degen.",
     icon: "⛓️",
     accentClass: "text-cyan",
@@ -120,27 +144,18 @@ export function ConceptSlider() {
               className="!w-[320px] sm:!w-[380px] md:!w-[420px]"
             >
               <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-card/90 backdrop-blur-xl p-8 flex flex-col gap-5 min-h-[340px] transition-all duration-300 hover:border-border/80">
-                {/* Icon */}
                 <div className="text-5xl">{slide.icon}</div>
-
-                {/* Question */}
                 <h3 className={`text-xl sm:text-2xl font-black uppercase tracking-tight ${slide.accentClass} ${slide.glowClass}`}>
                   {slide.question}
                 </h3>
-
-                {/* Answer */}
                 <p className="text-sm text-muted-foreground leading-relaxed flex-1">
                   {slide.answer}
                 </p>
-
-                {/* Highlight */}
                 <div className="pt-3 border-t border-border/30">
                   <span className="text-xs font-bold uppercase tracking-widest text-foreground/80">
                     tl;dr → {slide.highlight}
                   </span>
                 </div>
-
-                {/* Corner glow */}
                 <div
                   className="absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-10 blur-3xl"
                   style={{

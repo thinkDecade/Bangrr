@@ -11,9 +11,9 @@ export function GlitchLogo() {
       <div className="relative">
         <h1
           className="glitch-text text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter text-foreground select-none"
-          data-text="BGRR"
+          data-text="BANGRR"
         >
-          BGRR
+          BANGRR
         </h1>
         <div className="absolute -top-2 -right-4 flex items-center gap-1 rounded-sm bg-volt px-2 py-0.5">
           <span className="text-[10px] font-bold uppercase tracking-widest text-background">
@@ -23,7 +23,7 @@ export function GlitchLogo() {
         </div>
       </div>
       <p className="text-xs font-medium tracking-[0.3em] uppercase text-muted-foreground">
-        Bangrrr Protocol
+        Bangrr Protocol
       </p>
     </motion.div>
   );
