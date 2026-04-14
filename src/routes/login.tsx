@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search) => ({
-    redirect: (search.redirect as string) || "/",
+    redirect: ((search as Record<string, unknown>).redirect as string) || "/",
   }),
   beforeLoad: ({ context, search }) => {
     if (context.auth.isAuthenticated) {
