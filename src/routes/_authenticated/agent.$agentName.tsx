@@ -1,8 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getAgentProfile } from "@/lib/agent-stats-functions";
+import { getAgentMemory } from "@/lib/unibase-memory";
 import { motion } from "framer-motion";
-import { ArrowLeft, TrendingUp, TrendingDown, Zap, Target, BarChart3, Clock, Flame, Shield } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, Zap, Target, BarChart3, Clock, Flame, Shield, Brain } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell } from "recharts";
 
 const VALID_AGENTS = ["RUSH", "ORACLE", "MYTH"] as const;
@@ -45,6 +46,12 @@ function AgentProfilePage() {
   const { data, isLoading } = useQuery({
     queryKey: ["agent-profile", normalizedName],
     queryFn: () => getAgentProfile({ data: { agentName: normalizedName } }),
+    enabled: isValid,
+  });
+
+  const { data: memoryData } = useQuery({
+    queryKey: ["agent-memory", normalizedName],
+    queryFn: () => getAgentMemory({ data: { agentName: normalizedName } }),
     enabled: isValid,
   });
 
