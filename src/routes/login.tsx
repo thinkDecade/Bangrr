@@ -21,6 +21,7 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { auth } = Route.useRouteContext();
   const search = Route.useSearch();
+  useWalletProfile();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
