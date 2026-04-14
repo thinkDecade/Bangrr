@@ -97,14 +97,9 @@ export function ClipsFeed() {
               </div>
               {event && (
                 <div className="text-[11px] text-muted-foreground space-x-2">
-                  {event.actor_name && (
+                  {event.actor_name != null && (
                     <span>
-                      by{" "}
-                      <span className={event.actor_type === "agent" ? "text-hyper font-bold" : ""}>
-                        {event.actor_type === "agent"
-                          ? String(event.actor_name)
-                          : `${String(event.actor_name).slice(0, 6)}…`}
-                      </span>
+                      {"by "}
                       <span className={event.actor_type === "agent" ? "text-hyper font-bold" : ""}>
                         {event.actor_type === "agent"
                           ? String(event.actor_name)
@@ -112,7 +107,7 @@ export function ClipsFeed() {
                       </span>
                     </span>
                   )}
-                  {event.amount && <span>×{String(event.amount)}</span>}
+                  {event.amount != null && <span>{"×"}{String(event.amount)}</span>}
                   {event.price_change_pct != null && (
                     <span className={Number(event.price_change_pct) >= 0 ? "text-volt" : "text-signal"}>
                       {Number(event.price_change_pct) >= 0 ? "+" : ""}
