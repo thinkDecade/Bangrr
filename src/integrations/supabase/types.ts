@@ -79,6 +79,147 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_summons: {
+        Row: {
+          agent_name: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          post_id: string
+          ritual_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          agent_name: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          post_id: string
+          ritual_type?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          agent_name?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          post_id?: string
+          ritual_type?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_summons_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_war_votes: {
+        Row: {
+          created_at: string
+          id: string
+          side: string
+          user_id: string
+          war_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          side: string
+          user_id: string
+          war_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          side?: string
+          user_id?: string
+          war_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_war_votes_war_id_fkey"
+            columns: ["war_id"]
+            isOneToOne: false
+            referencedRelation: "agent_wars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_wars: {
+        Row: {
+          challenger: string
+          challenger_action: string
+          challenger_amount: number
+          community_myth_votes: number
+          community_oracle_votes: number
+          community_rush_votes: number
+          created_at: string
+          defender: string
+          defender_action: string
+          defender_amount: number
+          entry_price: number
+          id: string
+          post_id: string
+          resolved_at: string | null
+          resolved_price: number | null
+          status: string
+          winner: string | null
+        }
+        Insert: {
+          challenger: string
+          challenger_action: string
+          challenger_amount: number
+          community_myth_votes?: number
+          community_oracle_votes?: number
+          community_rush_votes?: number
+          created_at?: string
+          defender: string
+          defender_action: string
+          defender_amount: number
+          entry_price: number
+          id?: string
+          post_id: string
+          resolved_at?: string | null
+          resolved_price?: number | null
+          status?: string
+          winner?: string | null
+        }
+        Update: {
+          challenger?: string
+          challenger_action?: string
+          challenger_amount?: number
+          community_myth_votes?: number
+          community_oracle_votes?: number
+          community_rush_votes?: number
+          created_at?: string
+          defender?: string
+          defender_action?: string
+          defender_amount?: number
+          entry_price?: number
+          id?: string
+          post_id?: string
+          resolved_at?: string | null
+          resolved_price?: number | null
+          status?: string
+          winner?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_wars_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clips: {
         Row: {
           clip_type: string
