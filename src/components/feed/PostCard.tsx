@@ -25,6 +25,7 @@ interface PostCardProps {
   post: PostData;
   priceHistory?: number[];
   onTradeComplete?: () => void;
+  otherPosts?: Array<{ id: string; content: string; current_price: number | null }>;
 }
 
 export function PostCard({ post, priceHistory, onTradeComplete }: PostCardProps) {
