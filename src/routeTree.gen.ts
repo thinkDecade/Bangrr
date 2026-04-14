@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as HooksAgentCycleRouteImport } from './routes/hooks/agent-cycle'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
+import { Route as AuthenticatedAgentAgentNameRouteImport } from './routes/_authenticated/agent.$agentName'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -57,6 +58,12 @@ const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAgentAgentNameRoute =
+  AuthenticatedAgentAgentNameRouteImport.update({
+    id: '/agent/$agentName',
+    path: '/agent/$agentName',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/feed': typeof AuthenticatedFeedRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/hooks/agent-cycle': typeof HooksAgentCycleRoute
+  '/agent/$agentName': typeof AuthenticatedAgentAgentNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
   '/feed': typeof AuthenticatedFeedRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/hooks/agent-cycle': typeof HooksAgentCycleRoute
+  '/agent/$agentName': typeof AuthenticatedAgentAgentNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +95,7 @@ export interface FileRoutesById {
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/hooks/agent-cycle': typeof HooksAgentCycleRoute
+  '/_authenticated/agent/$agentName': typeof AuthenticatedAgentAgentNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/profile'
     | '/hooks/agent-cycle'
+    | '/agent/$agentName'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/profile'
     | '/hooks/agent-cycle'
+    | '/agent/$agentName'
   id:
     | '__root__'
     | '/'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/feed'
     | '/_authenticated/profile'
     | '/hooks/agent-cycle'
+    | '/_authenticated/agent/$agentName'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -185,17 +198,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFeedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/agent/$agentName': {
+      id: '/_authenticated/agent/$agentName'
+      path: '/agent/$agentName'
+      fullPath: '/agent/$agentName'
+      preLoaderRoute: typeof AuthenticatedAgentAgentNameRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedAgentAgentNameRoute: typeof AuthenticatedAgentAgentNameRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedAgentAgentNameRoute: AuthenticatedAgentAgentNameRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
