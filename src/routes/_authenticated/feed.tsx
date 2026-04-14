@@ -26,23 +26,9 @@ function FeedPage() {
   const queryClient = useQueryClient();
   const [showSidebar, setShowSidebar] = useState(false);
 
-  const fetchPosts = useCallback(async () => {
-    const session = await supabase.auth.getSession();
-    const token = session.data.session?.access_token;
-    if (!token) return { posts: [], nextCursor: null, error: "Not authenticated" };
-
-    const result = await getPosts(
-      { data: { limit: 30 } },
-      {
-        headers: { authorization: `Bearer ${token}` },
-      } as any
-    );
-    return result;
-  }, []);
-
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["feed-posts"],
-    queryFn: fetchPosts,
+    queryFn: () => getPosts({ data: { limit: 30 } }),
   });
 
   const posts = (data?.posts ?? []) as PostData[];
