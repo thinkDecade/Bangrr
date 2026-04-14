@@ -1,25 +1,142 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { PostCard, type PostData } from "@/components/feed/PostCard";
+import { CreatePost } from "@/components/feed/CreatePost";
+import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
+import { getPosts } from "@/lib/feed-functions";
+import { useCallback, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft, Activity } from "lucide-react";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({
     meta: [
       { title: "Feed — BANGRR" },
-      { name: "description", content: "Trade attention on live opinions. APE or EXIT." },
+      {
+        name: "description",
+        content: "Trade attention on live opinions. APE or EXIT.",
+      },
     ],
   }),
   component: FeedPage,
 });
 
 function FeedPage() {
+  const queryClient = useQueryClient();
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const fetchPosts = useCallback(async () => {
+    const session = await supabase.auth.getSession();
+    const token = session.data.session?.access_token;
+    if (!token) return { posts: [], nextCursor: null, error: "Not authenticated" };
+
+    const result = await getPosts(
+      { data: { limit: 30 } },
+      {
+        headers: { authorization: `Bearer ${token}` },
+      } as any
+    );
+    return result;
+  }, []);
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["feed-posts"],
+    queryFn: fetchPosts,
+  });
+
+  const posts = (data?.posts ?? []) as PostData[];
+
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-black text-volt glow-volt">FEED</h1>
-        <p className="text-muted-foreground">Trading feed coming soon.</p>
-        <Link to="/" className="text-sm text-cyan hover:underline">
-          ← Back to market
-        </Link>
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Top bar */}
+      <header className="sticky top-0 z-40 glass-card border-b border-border/20 px-4 py-3">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <h1 className="text-lg font-bold">Feed</h1>
+            <span className="inline-flex items-center gap-1 text-xs text-volt bg-volt/10 px-2 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-volt animate-pulse-glow" />
+              LIVE
+            </span>
+          </div>
+          <button
+            onClick={() => setShowSidebar(!showSidebar)}
+            className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
+          >
+            <Activity className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
+
+      {/* Main layout */}
+      <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="flex gap-4">
+          {/* Feed column */}
+          <div className="flex-1 min-w-0 space-y-3">
+            {isLoading && (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="glass-card rounded-2xl p-5 h-48 animate-shimmer bg-gradient-to-r from-surface via-surface-elevated to-surface"
+                  />
+                ))}
+              </div>
+            )}
+
+            {!isLoading && posts.length === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-20 space-y-3"
+              >
+                <p className="text-2xl">🔥</p>
+                <p className="text-muted-foreground text-sm">
+                  No opinions yet. Be first to drop one.
+                </p>
+              </motion.div>
+            )}
+
+            {posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onTradeComplete={handleRefresh}
+              />
+            ))}
+          </div>
+
+          {/* Activity sidebar — desktop */}
+          <div className="hidden lg:block w-72 shrink-0">
+            <div className="sticky top-20">
+              <ActivitySidebar />
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Mobile sidebar overlay */}
+      {showSidebar && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            onClick={() => setShowSidebar(false)}
+          />
+          <div className="absolute right-0 top-0 bottom-0 w-80 p-4">
+            <ActivitySidebar />
+          </div>
+        </div>
+      )}
+
+      {/* Create post FAB */}
+      <CreatePost onPostCreated={handleRefresh} />
     </div>
   );
 }
