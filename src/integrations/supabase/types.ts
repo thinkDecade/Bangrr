@@ -111,6 +111,59 @@ export type Database = {
           },
         ]
       }
+      leveraged_positions: {
+        Row: {
+          action: string
+          amount: number
+          closed_at: string | null
+          created_at: string
+          entry_price: number
+          id: string
+          is_open: boolean
+          leverage: number
+          liquidation_price: number
+          pnl: number | null
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          amount: number
+          closed_at?: string | null
+          created_at?: string
+          entry_price: number
+          id?: string
+          is_open?: boolean
+          leverage: number
+          liquidation_price: number
+          pnl?: number | null
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          amount?: number
+          closed_at?: string | null
+          created_at?: string
+          entry_price?: number
+          id?: string
+          is_open?: boolean
+          leverage?: number
+          liquidation_price?: number
+          pnl?: number | null
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leveraged_positions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           content: string
@@ -359,12 +412,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      check_liquidations: { Args: { _post_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      open_leveraged_position: {
+        Args: {
+          _action: string
+          _amount: number
+          _leverage: number
+          _post_id: string
+        }
+        Returns: Json
       }
       process_rotation: {
         Args: { _amount: number; _from_post_id: string; _to_post_id: string }
