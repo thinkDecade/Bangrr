@@ -58,4 +58,4 @@
 - ⬜ Pieverse real facilitator endpoint + EIP-712 wallet signing
 - ⬜ Unibase real MEMBASE_SECRET_KEY
 - ⬜ MYX Finance real contracts
-- ⬜ Early Ape NFT (BEP-721 auto-mint for first APE into 5×+ post)
+- ⬜ Early Ape NFT real BEP-721 on-chain minting (currently DB-tracked)
