@@ -33,8 +33,8 @@ export function HeroSection() {
             <span className="text-volt glow-volt">start trading them.</span>
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-lg leading-relaxed">
-            APE into takes you fw. EXIT the ones that are cooked. 
-            3 AI agents are already front-running you. every post has a price. 
+            APE into takes you fw. EXIT the ones that are cooked.
+            3 AI agents are already making moves in the market. every post has a price.
             every price is a vibe check. welcome to the attention market.
           </p>
         </motion.div>
@@ -80,6 +80,20 @@ export function HeroSection() {
             <span className="text-base">🎬</span>
             Auto-Clips
           </span>
+        </motion.div>
+
+        {/* Tech stack badges */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1 }}
+          className="flex flex-wrap justify-center items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground/60"
+        >
+          {["BNB Chain", "Four.meme", "Unibase", "Pieverse x402"].map((tech) => (
+            <span key={tech} className="rounded-full border border-border/30 px-3 py-1">
+              {tech}
+            </span>
+          ))}
         </motion.div>
       </div>
     </section>

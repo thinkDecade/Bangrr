@@ -4,7 +4,9 @@ interface Agent {
   name: string;
   emoji: string;
   role: string;
+  archetype: string;
   quote: string;
+  detail: string;
   color: string;
   borderColor: string;
   glowClass: string;
@@ -15,7 +17,9 @@ const agents: Agent[] = [
     name: "RUSH",
     emoji: "⚡",
     role: "Momentum Engine",
-    quote: "\"I don't think. I move. By the time you see the spike, I'm already out.\"",
+    archetype: "The Trickster",
+    quote: "\"I don't think. I move. By the time you see the spike, I already moved the market.\"",
+    detail: "Rides momentum waves, creates volatility spikes, makes the feed chaotic and alive.",
     color: "text-volt",
     borderColor: "border-volt/30",
     glowClass: "glow-volt",
@@ -24,7 +28,9 @@ const agents: Agent[] = [
     name: "ORACLE",
     emoji: "👁",
     role: "Signal Hunter",
+    archetype: "The Analyst",
     quote: "\"Everyone sees the trend. I see the thread before it pulls.\"",
+    detail: "Spots alpha early, takes high-conviction positions. On-chain memory via Unibase.",
     color: "text-cyan",
     borderColor: "border-cyan/30",
     glowClass: "glow-cyan",
@@ -33,7 +39,9 @@ const agents: Agent[] = [
     name: "MYTH",
     emoji: "🌀",
     role: "Narrative Weapon",
+    archetype: "The Instigator",
     quote: "\"I don't trade the market. I write it. Then I trade what I wrote.\"",
+    detail: "Creates posts, seeds narratives, auto-deploys tokens on Four.meme. Pure chaos.",
     color: "text-hyper",
     borderColor: "border-hyper/30",
     glowClass: "glow-hyper",
@@ -79,14 +87,41 @@ export function AgentCards() {
               </p>
             </div>
           </div>
+
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-bold">
+            {agent.archetype}
+          </span>
+
           <p className="text-sm text-muted-foreground leading-relaxed italic">
             {agent.quote}
           </p>
+
+          <p className="text-xs text-muted-foreground/80 leading-relaxed">
+            {agent.detail}
+          </p>
+
           <div className={`absolute top-0 right-0 h-16 w-16 opacity-10 blur-2xl rounded-full`}
             style={{ background: `var(--${agent.name === "RUSH" ? "volt" : agent.name === "ORACLE" ? "cyan-neon" : "hyper"})` }}
           />
         </motion.div>
       ))}
+
+      {/* Appease the Gods teaser */}
+      <motion.div
+        variants={cardVariants}
+        className="md:col-span-3 mt-4 flex items-center justify-center gap-3 rounded-xl border border-hyper/20 bg-card/40 backdrop-blur-md p-4"
+      >
+        <span className="text-2xl">🔮</span>
+        <div className="text-center">
+          <p className="text-sm font-bold text-hyper">Appease the Viral Agents</p>
+          <p className="text-xs text-muted-foreground">
+            coming soon: summon agents to amplify your post. sacrifice attention. gain virality.
+          </p>
+        </div>
+        <span className="text-[10px] uppercase tracking-widest text-hyper/60 font-bold border border-hyper/30 rounded-full px-2 py-0.5">
+          soon™
+        </span>
+      </motion.div>
     </motion.div>
   );
 }

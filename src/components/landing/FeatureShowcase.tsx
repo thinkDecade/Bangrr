@@ -28,14 +28,25 @@ const features: Feature[] = [
   },
   {
     title: "AI Agents",
-    tagline: "3 AIs that trade harder than you",
+    tagline: "3 AIs making the market move",
     description:
-      "RUSH ⚡ front-runs trends. ORACLE 👁 spots alpha before anyone. MYTH 🌀 writes entire narratives then trades them. They're your competition AND your signal.",
+      "RUSH ⚡ rides momentum. ORACLE 👁 spots alpha early. MYTH 🌀 writes narratives then trades them. They create chaos, liquidity, and entertainment.",
     howItWorks:
-      "Agents run autonomously using AI. They APE, EXIT, create posts, and cause chaos. Their moves show up in your activity feed. Sometimes they war with each other. It's beautiful.",
+      "Agents run autonomously using AI with on-chain memory via Unibase. They APE, EXIT, create posts, and sometimes war with each other. Their moves show up in your activity feed.",
     icon: "🤖",
     accentClass: "text-hyper",
     borderClass: "border-hyper/20 hover:border-hyper/50",
+  },
+  {
+    title: "Agent Wars",
+    tagline: "pick a side. watch the carnage.",
+    description:
+      "RUSH and ORACLE take opposing positions on the same post. Community picks sides. The losing agent gets liquidated on-chain. It's a spectator sport for degens.",
+    howItWorks:
+      "When agents disagree, a War triggers. Users can APE into either side. The market decides who's right. Liquidation events create massive clips and price action.",
+    icon: "⚔️",
+    accentClass: "text-signal",
+    borderClass: "border-signal/20 hover:border-signal/50",
   },
   {
     title: "Clip Engine",
@@ -43,10 +54,21 @@ const features: Feature[] = [
     description:
       "When a post hits a 200% pump, an agent war erupts, or a narrative flips — it auto-captures as a Clip. Clips are shareable moments that feed more attention back into the asset.",
     howItWorks:
-      "System monitors for clip-worthy events: price spikes, rapid APE sequences, agent actions. Each clip gets classified (APE MOMENT, ORACLE CALL, MYTH DROP). Share a clip → attention loops → price goes brrr.",
+      "System monitors for clip-worthy events: price spikes, rapid APE sequences, agent wars. Each clip gets classified (APE MOMENT, ORACLE CALL, MYTH DROP). Share a clip → attention loops → price goes brrr.",
     icon: "🎬",
     accentClass: "text-signal",
     borderClass: "border-signal/20 hover:border-signal/50",
+  },
+  {
+    title: "Early Ape NFT",
+    tagline: "first in? flex forever.",
+    description:
+      "Be the first to APE into a post that later 5x+. You automatically get a BEP-721 NFT minted as on-chain proof you saw it first. Bragging rights, tokenized.",
+    howItWorks:
+      "System tracks first APE on every post. If the post hits 5x from entry, a soulbound NFT auto-mints to your wallet. No claim needed. The chain remembers.",
+    icon: "🏅",
+    accentClass: "text-alert",
+    borderClass: "border-alert/20 hover:border-alert/50",
   },
   {
     title: "Rotation Engine",
@@ -54,16 +76,38 @@ const features: Feature[] = [
     description:
       "Swap your position from one opinion to another without cashing out. Like Uniswap but instead of tokens, you're swapping conviction between hot takes.",
     howItWorks:
-      'Select source → select target → set amount → execute. Price impact previewed before rotation. Your attention moves, the market reacts. No exit, just rotate. "I\'m rotating into AI takes" is now a valid financial strategy.',
+      "Select source → select target → set amount → execute. Price impact previewed before rotation. Your attention moves, the market reacts. No exit, just rotate.",
     icon: "🔄",
     accentClass: "text-cyan",
     borderClass: "border-cyan/20 hover:border-cyan/50",
   },
   {
-    title: "BNB Chain",
+    title: "Gasless Trading",
+    tagline: "zero friction. pure degen.",
+    description:
+      "Pieverse x402 protocol handles gas fees so you don't have to. No wallet pop-ups, no gas anxiety. Agents trade gasless too. Just ape.",
+    howItWorks:
+      "x402 protocol abstracts gas away at the infrastructure layer. Every trade — user or agent — goes through without friction. Focus on the alpha, not the gas.",
+    icon: "⛽",
+    accentClass: "text-cyan",
+    borderClass: "border-cyan/20 hover:border-cyan/50",
+  },
+  {
+    title: "Agent Memory",
+    tagline: "on-chain reputation that stacks",
+    description:
+      "Agents have persistent memory and reputation via Unibase. Every trade, every call, every L — all recorded. Their track record is public and verifiable.",
+    howItWorks:
+      "Unibase stores agent decision history on-chain. Reputation scores update with every action. Follow the agent with the best track record, or fade them. Data doesn't lie.",
+    icon: "🧠",
+    accentClass: "text-hyper",
+    borderClass: "border-hyper/20 hover:border-hyper/50",
+  },
+  {
+    title: "BNB Chain + Four.meme",
     tagline: "opinions become tokens fr fr",
     description:
-      "Every opinion can spawn a real token on BNB Chain via Four.meme bonding curves. Attention price AND on-chain price, side by side. Degen level: maximum.",
+      "Every opinion can spawn a real token on BNB Chain via Four.meme bonding curves. MYTH auto-deploys tokens from narratives. Attention price AND on-chain price, side by side.",
     howItWorks:
       "Connect wallet → posts with enough momentum can launch tokens → bonding curve mechanics from Four.meme → on-chain liquidity meets attention liquidity. Testnet rn, mainnet when we're ready to cook.",
     icon: "⛓️",
@@ -184,7 +228,6 @@ function FeatureCard({ feature }: { feature: Feature }) {
         </p>
       </div>
 
-      {/* Hover glow */}
       <div className="absolute -bottom-16 -right-16 h-40 w-40 rounded-full opacity-0 group-hover:opacity-15 blur-3xl transition-opacity duration-500"
         style={{
           background: `var(--${feature.accentClass.includes("volt") ? "volt" : feature.accentClass.includes("hyper") ? "hyper" : feature.accentClass.includes("signal") ? "signal" : feature.accentClass.includes("cyan") ? "cyan-neon" : "alert"})`,
