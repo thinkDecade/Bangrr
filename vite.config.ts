@@ -6,13 +6,4 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig({
-  vite: {
-    resolve: {
-      alias: {
-        // Stub out ahooks directory imports for SSR compatibility
-        "ahooks/es/useAsyncEffect": "ahooks/es/useAsyncEffect/index.js",
-      },
-    },
-  },
-});
+export default defineConfig();
