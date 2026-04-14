@@ -83,12 +83,22 @@ function FeedPage() {
               LIVE
             </span>
           </div>
-          <button
-            onClick={() => setShowSidebar(!showSidebar)}
-            className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
-          >
-            <Activity className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleRunAgents}
+              disabled={agentsRunning}
+              className="flex items-center gap-1.5 text-xs font-bold text-hyper bg-hyper/10 hover:bg-hyper/20 px-3 py-1.5 rounded-full transition-colors disabled:opacity-50"
+            >
+              <Bot className={`w-3.5 h-3.5 ${agentsRunning ? "animate-spin" : ""}`} />
+              {agentsRunning ? "RUNNING…" : "RUN AGENTS"}
+            </button>
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
+            >
+              <Activity className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </header>
 
