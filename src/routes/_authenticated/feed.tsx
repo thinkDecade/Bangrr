@@ -50,6 +50,24 @@ function FeedPage() {
     queryClient.invalidateQueries({ queryKey: ["price-history"] });
   };
 
+  const handleRunAgents = async () => {
+    setAgentsRunning(true);
+    try {
+      const result = await runAgentCycle({ data: { maxPosts: 5 } });
+      if (result.error) {
+        toast.error(`Agent error: ${result.error}`);
+      } else {
+        const count = result.results.length;
+        toast.success(`⚡👁🌀 ${count} agent trades executed`);
+        handleRefresh();
+      }
+    } catch (e) {
+      toast.error("Failed to run agents");
+    } finally {
+      setAgentsRunning(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Top bar */}
