@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ConnectButtonLazy, WalletProfileSyncLazy } from "@/components/particle/ConnectButtonLazy";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/signup")({
   beforeLoad: ({ context }) => {
