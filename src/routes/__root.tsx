@@ -1,10 +1,11 @@
 import { Outlet, Link, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { AuthState } from "@/hooks/use-auth";
+import { useAuth, type AuthState } from "@/hooks/use-auth";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 
-interface RouterContext {
+export interface RouterContext {
   auth: AuthState;
   queryClient: QueryClient;
 }
@@ -74,6 +75,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const auth = useAuth();
+  const router = Route.useRouter();
+
+  // Update router context when auth state changes
+  useEffect(() => {
+    router.update({
+      context: {
+        ...router.options.context,
+        auth,
+      },
+    });
+    router.invalidate();
+  }, [auth.isAuthenticated, auth.isLoading]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
