@@ -92,7 +92,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <ParticleProvider>
+        <Outlet />
+      </ParticleProvider>
     </QueryClientProvider>
   );
 }
