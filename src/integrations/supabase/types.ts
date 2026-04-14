@@ -310,6 +310,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      agent_process_trade: {
+        Args: {
+          _action: string
+          _agent_name: string
+          _amount: number
+          _post_id: string
+        }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
