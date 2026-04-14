@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Sparkline } from "./Sparkline";
 import { TradeActions } from "./TradeActions";
+import { TokenBadge } from "./TokenDeployStatus";
 import { formatDistanceToNow } from "date-fns";
 
 interface PostProfile {
@@ -18,6 +19,7 @@ export interface PostData {
   volume: number | null;
   created_at: string;
   creator_id: string;
+  token_address?: string | null;
   profiles: PostProfile | null;
 }
 
@@ -78,6 +80,11 @@ export function PostCard({ post, priceHistory, onTradeComplete, otherPosts }: Po
 
       {/* Content */}
       <p className="text-base leading-relaxed">{post.content}</p>
+
+      {/* Token badge */}
+      {post.token_address && (
+        <TokenBadge tokenAddress={post.token_address} />
+      )}
 
       {/* Sparkline + stats */}
       <div className="flex items-center gap-4">
