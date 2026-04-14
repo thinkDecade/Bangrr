@@ -144,6 +144,16 @@ function SignupPage() {
             {loading ? "creating..." : "CREATE ACCOUNT →"}
           </Button>
 
+          <div className="relative flex items-center gap-4 py-2">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-mono text-muted-foreground uppercase">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <div className="flex justify-center [&_button]:!w-full [&_button]:!font-mono [&_button]:!uppercase [&_button]:!tracking-wider">
+            <ConnectButton label="CONNECT WALLET →" />
+          </div>
+
           <div className="text-center text-sm">
             <Link
               to="/login"
