@@ -1,87 +1,95 @@
 
 
-# Homepage Upgrade — PRD v2 Alignment
+# Phase 2: Database Schema & Auth
 
-## What's Changing
+## Overview
+Enable Lovable Cloud and set up the full database schema plus Bangrrr-styled authentication. No Supabase integration exists yet — this is greenfield.
 
-### Branding consistency
-- All references to "BANGRRR" → **"BANGRR"** (two R's, not three) across every component
-- GlitchLogo text updated to "BANGRR"
+## Step 1: Enable Lovable Cloud
+- Enable Cloud to get Supabase integration files (`src/integrations/supabase/`)
+- This provides `client.ts`, `client.server.ts`, `auth-middleware.ts`
 
-### New integrations to showcase (from PRD v2)
-- **Unibase** — Agent Memory layer (on-chain reputation for agents)
-- **Pieverse** — Gasless trades via x402 protocol
-- **MYX Finance** — Leveraged attention positions (bonus feature)
-- **Four.meme** — MYTH auto-deploys tokens from narratives
-- **Early Ape NFT** — First APE into a post that later 5x+ = auto-minted NFT
+## Step 2: Database Migrations
 
-### Voice & messaging fixes
-- Remove "front-running you" / "they're your competition" language from agent section
-- Reframe agents as **market participants that create action** — they make the market alive, not adversarial
-- Add new concept: **"Appease the Viral Agents"** — users can appeal to agents to amplify their posts (teased as coming soon)
+Create tables via migrations:
 
-### New feature: Agent War mechanic
-- RUSH vs ORACLE take opposing positions — community picks sides
-- Losing agent gets liquidated visibly — spectator sport
+**`profiles`** — extends auth.users
+- `id` (uuid, FK → auth.users, PK), `username` (text, unique), `display_name` (text), `avatar_url` (text), `total_pnl` (numeric, default 0), `wallet_address` (text), `created_at`
+- Trigger: auto-create profile on signup
+- RLS: users read all, update own
 
----
+**`posts`** — tradable attention assets
+- `id` (uuid), `creator_id` (FK → profiles), `content` (text), `current_price` (numeric, default 1.0), `price_change_pct` (numeric, default 0), `volume` (bigint, default 0), `token_address` (text, nullable), `is_active` (boolean, default true), `created_at`
+- RLS: anyone reads, authenticated users insert own
 
-## Files Modified
+**`trades`** — APE/EXIT records
+- `id` (uuid), `user_id` (FK → profiles), `post_id` (FK → posts), `action` (text, check APE/EXIT), `amount` (numeric), `price_at_trade` (numeric), `created_at`
+- RLS: users read own, insert own
 
-### 1. `src/components/landing/GlitchLogo.tsx`
-- Change "BANGRRR" → "BANGRR" in all text layers
+**`price_history`** — sparkline data
+- `id` (uuid), `post_id` (FK → posts), `price` (numeric), `recorded_at` (timestamptz, default now())
+- RLS: anyone reads
 
-### 2. `src/components/landing/HeroSection.tsx`
-- Update tagline copy — keep degen voice, remove adversarial agent framing
-- Add tech stack badges: BNB Chain, Four.meme, Unibase, Pieverse
-- Fix branding to "BANGRR"
+**`rotations`** — DEX swaps
+- `id` (uuid), `user_id` (FK → profiles), `from_post_id` (FK → posts), `to_post_id` (FK → posts), `amount` (numeric), `price_from` (numeric), `price_to` (numeric), `created_at`
+- RLS: users read own, insert own
 
-### 3. `src/components/landing/ConceptSlider.tsx`
-- Update agent slide: remove "front-runs" language, reframe as "3 AI agents creating chaos in the market — they APE, EXIT, create content, and make things move"
-- Add new slide: **"what are Agent Wars?"** — RUSH vs ORACLE opposing positions, community picks sides
-- Add new slide: **"what's an Early Ape NFT?"** — first APE into a post that 5x+ = on-chain proof
-- Add new slide: **"gasless trading?"** — Pieverse x402 protocol, no gas friction
-- Fix branding references
+**`clips`** — viral moment captures
+- `id` (uuid), `post_id` (FK → posts), `clip_type` (text, check: APE_MOMENT/ORACLE_CALL/MYTH_DROP/VOLATILITY_SPIKE/AGENT_WAR), `trigger_event` (jsonb), `created_at`
+- RLS: anyone reads
 
-### 4. `src/components/landing/AgentCards.tsx`
-- Remove "your competition" framing from parent section
-- Add personality detail: agents have on-chain memory (Unibase), reputation that builds over time
-- Add "Agent War" teaser — when RUSH and ORACLE disagree, chaos ensues
-- New card detail: each agent shows their archetype (Trickster, Analyst, Instigator per PRD)
-- Tease "Appease the Agents" feature — a subtle badge/tag: "🔮 coming soon: summon agents to boost your post"
+**`activity_feed`** — live market activity
+- `id` (uuid), `actor_type` (text, check: user/agent/system), `actor_name` (text), `action` (text), `post_id` (FK → posts, nullable), `metadata` (jsonb), `created_at`
+- RLS: anyone reads, server inserts
 
-### 5. `src/components/landing/FeatureShowcase.tsx`
-- Add new features:
-  - **Gasless Trading (Pieverse)** — agents and users trade without gas via x402
-  - **Agent Wars** — RUSH vs ORACLE opposing positions, community picks sides, liquidation events
-  - **Early Ape NFT** — BEP-721 auto-minted when you're first to APE a post that 5x+
-  - **Agent Memory (Unibase)** — agents have persistent on-chain reputation
-- Update existing feature descriptions to match PRD v2 language
-- Update BNB Chain card to mention Four.meme MYTH auto-deploying tokens
+**`user_roles`** — security pattern
+- `id` (uuid), `user_id` (FK → auth.users, cascade), `role` (app_role enum: admin/moderator/user), unique(user_id, role)
+- `has_role()` security definer function
+- RLS: users read own
 
-### 6. `src/components/landing/SystemVoiceCTA.tsx`
-- Fix branding
-- Keep APE/EXIT/ROTATE/CLIP vocabulary badges
+## Step 3: Auth Pages
 
-### 7. `src/routes/index.tsx`
-- Update meta tags to "BANGRR" (not BANGRRR)
-- Update agents section heading: remove "they're your competition" — replace with "they're already in the market"
-- Add new section between agents and features: **"Appease the Gods"** teaser — "coming soon: summon agents to amplify your post. sacrifice attention. gain virality." with a "notify me" style CTA
+**`/login`** route — Bangrrr-styled:
+- Email + password form with neon borders, glitch effects
+- System voice error messages ("Too slow.", "Wrong keys.", "You missed it.")
+- Link to signup, forgot password
+- Redirect back to intended page after login
 
-### 8. `src/components/landing/MockTicker.tsx`
-- Fix any "BANGRRR" references to "BANGRR"
+**`/signup`** route:
+- Username + email + password
+- Auto-create profile via trigger
+- System voice: "welcome to the chaos."
 
-### 9. `src/styles.css`
-- No structural changes needed — existing theme supports all updates
+**`/reset-password`** route:
+- Password reset flow per Supabase pattern
 
-### 10. Memory updates
-- Update `mem://features/bangrr-core` with Unibase, Pieverse, MYX, Agent Wars, Early Ape NFT
-- Update `mem://index.md` to reflect new feature set
+## Step 4: Auth Guard
 
----
+**`/_authenticated.tsx`** layout route:
+- `beforeLoad` checks auth via router context
+- Redirects to `/login` with redirect-back
+- All protected routes (feed, profile) nest under this
+
+## Step 5: Router Context Update
+
+- Update `__root.tsx` to `createRootRouteWithContext` with auth state
+- Set up `QueryClientProvider` for TanStack Query
+- Update `router.tsx` to pass auth context
+
+## Files Created/Modified
+- 8 migration files (one per table + enum + trigger + has_role function)
+- `src/routes/login.tsx` — styled login page
+- `src/routes/signup.tsx` — styled signup page  
+- `src/routes/reset-password.tsx` — password reset
+- `src/routes/_authenticated.tsx` — auth guard layout
+- `src/routes/__root.tsx` — add auth context + QueryClientProvider
+- `src/router.tsx` — auth context setup
+- `src/hooks/use-auth.tsx` — auth state hook
 
 ## Technical Notes
-- No new packages needed — existing Swiper, Framer Motion, and Tailwind handle everything
-- All changes are component-level content and copy updates
-- New "Appease the Gods" section uses existing motion patterns (framer-motion fade-in)
+- Branding stays "BANGRR" throughout auth pages
+- System voice personality on all auth error/success states
+- Neon border/glow effects on form inputs matching the brand
+- No new heavy dependencies — uses existing Framer Motion + Tailwind
+- Need to fix "BANGRRR" → "BANGRR" in `__root.tsx` meta tags (spotted during review)
 
