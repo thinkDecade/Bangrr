@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 interface TickerItem {
   id: number;
@@ -41,19 +40,21 @@ export function MockTicker() {
   const doubled = [...items, ...items];
 
   return (
-    <div className="w-full overflow-hidden border-y border-border/50 bg-surface/50 backdrop-blur-sm">
+    <div className="w-full overflow-hidden border-y border-border/30 bg-muted/30">
       <div className="animate-ticker-scroll flex whitespace-nowrap py-3">
         {doubled.map((item, i) => (
-          <div key={`${item.id}-${i}`} className="mx-6 inline-flex items-center gap-3">
-            <span className="text-sm font-medium text-muted-foreground truncate max-w-[140px]">
+          <div key={`${item.id}-${i}`} className="mx-6 inline-flex items-center gap-2.5">
+            <span className="text-xs font-medium text-muted-foreground truncate max-w-[140px]">
               {item.label}
             </span>
-            <span className="text-sm font-bold text-foreground tabular-nums">
+            <span className="text-xs font-bold text-foreground tabular-nums">
               ${item.price.toFixed(2)}
             </span>
             <span
-              className={`text-xs font-semibold tabular-nums ${
-                item.change >= 0 ? "text-volt" : "text-signal"
+              className={`text-[10px] font-semibold tabular-nums rounded-full px-1.5 py-0.5 ${
+                item.change >= 0
+                  ? "text-volt bg-volt/10"
+                  : "text-signal bg-signal/10"
               }`}
             >
               {item.change >= 0 ? "+" : ""}

@@ -3,58 +3,57 @@ import { Link } from "@tanstack/react-router";
 
 export function SystemVoiceCTA() {
   return (
-    <section className="relative py-24 overflow-hidden">
+    <section className="relative py-28 overflow-hidden">
+      {/* Soft radial gradient */}
       <div
-        className="absolute inset-0 animate-gradient-drift opacity-30"
+        className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, oklch(0.08 0.02 270), oklch(0.55 0.25 290 / 0.15), oklch(0.85 0.25 155 / 0.1), oklch(0.08 0.02 270))",
-          backgroundSize: "100% 400%",
+            "radial-gradient(ellipse at 50% 50%, oklch(0.6 0.28 290 / 0.06) 0%, transparent 60%)",
         }}
       />
-      <div className="noise-overlay absolute inset-0" />
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="relative z-10 max-w-3xl mx-auto text-center px-4 space-y-8"
+        className="relative z-10 max-w-2xl mx-auto text-center px-4 space-y-10"
       >
         <div className="space-y-4">
-          <p className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground leading-tight">
+          <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground leading-tight">
             "the market doesn't care about your feelings.{" "}
-            <span className="text-signal glow-signal">it trades them.</span>"
+            <span className="text-signal">it trades them.</span>"
           </p>
-          <p className="text-xs uppercase tracking-[0.3em] text-volt/60 font-bold">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/50 font-semibold">
             — System Voice
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3">
+        {/* Vocabulary pills — IG/TikTok badge style */}
+        <div className="flex flex-wrap justify-center gap-2.5">
           {[
-            { label: "APE", desc: "= BUY", color: "text-volt" },
-            { label: "EXIT", desc: "= SELL", color: "text-signal" },
-            { label: "ROTATE", desc: "= SWAP", color: "text-cyan" },
-            { label: "CLIP", desc: "= AMPLIFY", color: "text-hyper" },
+            { label: "APE", desc: "= BUY", color: "text-volt bg-volt/10 border-volt/20" },
+            { label: "EXIT", desc: "= SELL", color: "text-signal bg-signal/10 border-signal/20" },
+            { label: "ROTATE", desc: "= SWAP", color: "text-cyan bg-cyan/10 border-cyan/20" },
+            { label: "CLIP", desc: "= AMPLIFY", color: "text-hyper bg-hyper/10 border-hyper/20" },
           ].map((tag) => (
             <span
               key={tag.label}
-              className="rounded-lg border border-border/40 bg-surface-elevated/50 px-4 py-2 text-sm font-mono font-bold"
+              className={`rounded-full border px-4 py-2 text-sm font-mono font-bold ${tag.color}`}
             >
-              <span className={tag.color}>{tag.label}</span>
-              <span className="text-muted-foreground"> {tag.desc}</span>
+              {tag.label}
+              <span className="text-foreground/50 font-normal"> {tag.desc}</span>
             </span>
           ))}
         </div>
 
-        <div className="pt-4 flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-3">
           <Link
             to="/feed"
-            className="group relative inline-flex items-center gap-2 rounded-xl bg-volt px-10 py-4 text-sm font-black uppercase tracking-wider text-background transition-all hover:scale-105 active:scale-95"
+            className="group inline-flex items-center gap-2.5 rounded-2xl bg-volt px-10 py-4 text-sm font-bold uppercase tracking-wider text-background transition-all duration-200 hover:brightness-110 active:scale-[0.98]"
           >
             <span>ape in now</span>
-            <span className="transition-transform group-hover:translate-x-1">🧨</span>
-            <div className="absolute inset-0 rounded-xl bg-volt/20 blur-xl transition-opacity group-hover:opacity-100 opacity-0" />
+            <span className="transition-transform group-hover:translate-x-0.5">🧨</span>
           </Link>
           <p className="text-xs text-muted-foreground">
             nfa. dyor. but also... you're already late.
