@@ -4,8 +4,8 @@ import { PostCard, type PostData } from "@/components/feed/PostCard";
 import { CreatePost } from "@/components/feed/CreatePost";
 import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts } from "@/lib/feed-functions";
-import { useCallback, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { ArrowLeft, Activity } from "lucide-react";
 import { ArrowLeft, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 
