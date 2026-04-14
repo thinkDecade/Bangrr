@@ -1,10 +1,9 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, Suspense, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ConnectButton } from "@particle-network/connectkit";
-import { useWalletProfile } from "@/hooks/use-wallet-profile";
+import { ConnectButtonLazy, WalletProfileSyncLazy } from "@/components/particle/ConnectButtonLazy";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search) => ({
@@ -21,7 +20,6 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { auth } = Route.useRouteContext();
   const search = Route.useSearch();
-  useWalletProfile();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -123,7 +121,10 @@ function LoginPage() {
           </div>
 
           <div className="flex justify-center [&_button]:!w-full [&_button]:!font-mono [&_button]:!uppercase [&_button]:!tracking-wider">
-            <ConnectButton label="CONNECT WALLET →" />
+            <Suspense fallback={<Button variant="outline" className="w-full" disabled>Loading wallet...</Button>}>
+              <ConnectButtonLazy label="CONNECT WALLET →" />
+              <WalletProfileSyncLazy />
+            </Suspense>
           </div>
 
           <div className="flex items-center justify-between text-sm">
