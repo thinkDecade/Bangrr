@@ -3,8 +3,7 @@ import { useState, Suspense, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ConnectButtonLazy } from "@/components/particle/ConnectButtonLazy";
-import { useWalletProfile } from "@/hooks/use-wallet-profile";
+import { ConnectButtonLazy, WalletProfileSyncLazy } from "@/components/particle/ConnectButtonLazy";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search) => ({
@@ -21,7 +20,6 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { auth } = Route.useRouteContext();
   const search = Route.useSearch();
-  useWalletProfile();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
