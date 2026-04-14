@@ -108,11 +108,11 @@ export function ActivitySidebar() {
             key={entry.id}
             className="flex items-start gap-2 py-1.5 text-xs animate-float-up"
           >
-            <span>{getActionEmoji(entry.action)}</span>
+            <span>{getActionEmoji(entry.action, entry.actor_type, entry.actor_name)}</span>
             <div className="flex-1 min-w-0">
-              <span className="text-muted-foreground">
-                {entry.actor_name.slice(0, 8)}…
-              </span>{" "}
+              {getActorDisplay(entry)}{" "}
+              <span className={`font-semibold ${getActionColor(entry.action)}`}>
+                {entry.action}
               <span className={`font-semibold ${getActionColor(entry.action)}`}>
                 {entry.action}
               </span>
