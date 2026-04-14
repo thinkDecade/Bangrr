@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({
     meta: [
-      { title: "Feed — BANGRRR" },
+      { title: "Feed — BANGRR" },
       { name: "description", content: "Trade attention on live opinions. APE or EXIT." },
     ],
   }),
