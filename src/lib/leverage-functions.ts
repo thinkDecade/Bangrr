@@ -15,19 +15,19 @@ export const openLeveragedPosition = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
 
-    const { data: result, error } = await supabase.rpc("open_leveraged_position", {
+    const { data: result, error } = await supabase.rpc("open_leveraged_position" as any, {
       _post_id: data.postId,
       _action: data.action,
       _amount: data.amount,
       _leverage: data.leverage,
-    });
+    } as any);
 
     if (error) {
       console.error("openLeveragedPosition error:", error);
-      return { success: false, error: error.message };
+      return { success: false as const, error: error.message };
     }
 
-    const parsed = result as {
+    const parsed = result as unknown as {
       success: boolean;
       error?: string;
       position_id?: string;
@@ -37,11 +37,11 @@ export const openLeveragedPosition = createServerFn({ method: "POST" })
     };
 
     if (!parsed.success) {
-      return { success: false, error: parsed.error ?? "Failed to open position" };
+      return { success: false as const, error: parsed.error ?? "Failed to open position" };
     }
 
     return {
-      success: true,
+      success: true as const,
       error: null,
       positionId: parsed.position_id,
       entryPrice: parsed.entry_price,
@@ -61,8 +61,7 @@ export const getUserLeveragedPositions = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
 
-    let query = supabase
-      .from("leveraged_positions")
+    let query = (supabase.from as any)("leveraged_positions")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(50);
@@ -90,15 +89,15 @@ export const checkLiquidations = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
 
-    const { data: result, error } = await supabase.rpc("check_liquidations", {
+    const { data: result, error } = await supabase.rpc("check_liquidations" as any, {
       _post_id: data.postId,
-    });
+    } as any);
 
     if (error) {
       console.error("checkLiquidations error:", error);
       return { liquidated: 0, error: error.message };
     }
 
-    const parsed = result as { liquidated: number; current_price: number };
+    const parsed = result as unknown as { liquidated: number; current_price: number };
     return { liquidated: parsed.liquidated, currentPrice: parsed.current_price, error: null };
   });

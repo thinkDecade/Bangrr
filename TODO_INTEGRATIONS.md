@@ -26,8 +26,14 @@
 - ⬜ Wire real MEMBASE_SECRET_KEY for on-chain identity registration
 - ⬜ Knowledge base integration (ChromaDB vector storage for agent learnings)
 
-## 4. 📈 MYX Finance Leverage
-- Leveraged attention positions (2x, 5x, 10x) on posts
-- Integrate MYX Finance protocol for margin trading
-- Add leverage selector to TradeActions UI
-- Implement liquidation mechanics for over-leveraged positions
+## 4. 📈 MYX Finance Leverage — ✅ BUILT (simulated protocol)
+- ✅ `leveraged_positions` DB table with RLS (user-scoped CRUD)
+- ✅ `open_leveraged_position` DB function — opens position, calculates liq price, applies leveraged impact
+- ✅ `check_liquidations` DB function — scans open positions and liquidates when price crosses liq threshold
+- ✅ `src/lib/leverage-functions.ts` — `openLeveragedPosition`, `getUserLeveragedPositions`, `checkLiquidations` server functions
+- ✅ Leverage selector (1×/2×/5×/10×) in TradeActions UI with MYX Finance info banner
+- ✅ Liquidation price display for APE and EXIT directions
+- ✅ Leveraged trades apply amplified market impact (amount × leverage × 0.3)
+- ⬜ Wire real MYX Finance protocol contracts
+- ⬜ Margin/collateral management UI
+- ⬜ Position management panel (close, add margin, view P&L)
