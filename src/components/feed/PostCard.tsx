@@ -97,6 +97,7 @@ export function PostCard({ post, priceHistory, onTradeComplete, otherPosts }: Po
         postId={post.id}
         currentPrice={price}
         onTradeComplete={onTradeComplete}
+        otherPosts={otherPosts}
       />
     </motion.div>
   );
