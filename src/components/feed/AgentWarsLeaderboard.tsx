@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { getAgentStats } from "@/lib/agent-stats-functions";
 import { motion } from "framer-motion";
 import { Trophy, TrendingUp, TrendingDown, Zap, Target, BarChart3 } from "lucide-react";
