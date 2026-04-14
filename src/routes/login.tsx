@@ -123,7 +123,9 @@ function LoginPage() {
           </div>
 
           <div className="flex justify-center [&_button]:!w-full [&_button]:!font-mono [&_button]:!uppercase [&_button]:!tracking-wider">
-            <ConnectButton label="CONNECT WALLET →" />
+            <Suspense fallback={<Button variant="outline" className="w-full" disabled>Loading wallet...</Button>}>
+              <ConnectButtonLazy label="CONNECT WALLET →" />
+            </Suspense>
           </div>
 
           <div className="flex items-center justify-between text-sm">
