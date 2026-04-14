@@ -1,9 +1,9 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, Suspense, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ConnectButton } from "@particle-network/connectkit";
+import { ConnectButtonLazy } from "@/components/particle/ConnectButtonLazy";
 import { useWalletProfile } from "@/hooks/use-wallet-profile";
 
 export const Route = createFileRoute("/signup")({
