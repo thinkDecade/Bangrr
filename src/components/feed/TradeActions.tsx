@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useServerFn } from "@tanstack/react-start";
-import { executeTrade } from "@/lib/feed-functions";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { executeTrade, executeRotation } from "@/lib/feed-functions";
+import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface TradeActionsProps {
   postId: string;
   currentPrice?: number;
   onTradeComplete?: () => void;
+  otherPosts?: Array<{ id: string; content: string; current_price: number | null }>;
 }
 
 const AMOUNTS = [0.1, 0.5, 1, 5, 10];
@@ -18,12 +19,14 @@ function estimateImpact(price: number, amount: number, direction: 1 | -1): numbe
   return Math.max(0.01, newPrice);
 }
 
-export function TradeActions({ postId, currentPrice = 1, onTradeComplete }: TradeActionsProps) {
-  const [loading, setLoading] = useState<"APE" | "EXIT" | null>(null);
+export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherPosts }: TradeActionsProps) {
+  const [loading, setLoading] = useState<"APE" | "EXIT" | "ROTATE" | null>(null);
   const [lastAction, setLastAction] = useState<string | null>(null);
   const [selectedAmount, setSelectedAmount] = useState(1);
   const [showAmounts, setShowAmounts] = useState(false);
+  const [showRotate, setShowRotate] = useState(false);
   const executeTradeRpc = useServerFn(executeTrade);
+  const executeRotationRpc = useServerFn(executeRotation);
 
   const apeEstimate = estimateImpact(currentPrice, selectedAmount, 1);
   const exitEstimate = estimateImpact(currentPrice, selectedAmount, -1);
@@ -47,6 +50,27 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete }: Trad
       setLoading(null);
     }
   };
+
+  const handleRotate = async (toPostId: string) => {
+    setLoading("ROTATE");
+    setShowRotate(false);
+    try {
+      const result = await executeRotationRpc({
+        data: { fromPostId: postId, toPostId, amount: selectedAmount },
+      });
+      if (result.success) {
+        setLastAction("ROTATE");
+        setTimeout(() => setLastAction(null), 1500);
+        onTradeComplete?.();
+      }
+    } catch (err) {
+      console.error("Rotation failed:", err);
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const rotateTargets = (otherPosts ?? []).filter((p) => p.id !== postId);
 
   return (
     <div className="space-y-2 pt-1">
@@ -122,7 +146,56 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete }: Trad
           <TrendingDown className="w-4 h-4" />
           {loading === "EXIT" ? "..." : `EXIT ×${selectedAmount}`}
         </Button>
+        {rotateTargets.length > 0 && (
+          <Button
+            size="sm"
+            onClick={() => setShowRotate(!showRotate)}
+            disabled={loading !== null}
+            className={`rounded-xl font-bold text-sm gap-1.5 transition-all px-3 ${
+              lastAction === "ROTATE"
+                ? "bg-cyan text-background"
+                : "bg-cyan/15 text-cyan hover:bg-cyan/25 border border-cyan/20"
+            }`}
+          >
+            <RefreshCw className={`w-4 h-4 ${loading === "ROTATE" ? "animate-spin" : ""}`} />
+            {loading === "ROTATE" ? "..." : "ROTATE"}
+          </Button>
+        )}
       </div>
+
+      {/* Rotation target picker */}
+      <AnimatePresence>
+        {showRotate && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="rounded-xl border border-cyan/20 bg-cyan/5 p-3 space-y-2">
+              <p className="text-xs font-bold text-cyan uppercase tracking-wider">
+                Rotate ×{selectedAmount} into:
+              </p>
+              <div className="space-y-1 max-h-40 overflow-y-auto scrollbar-thin">
+                {rotateTargets.map((target) => (
+                  <button
+                    key={target.id}
+                    onClick={() => handleRotate(target.id)}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-surface-elevated/30 hover:bg-surface-elevated/60 transition-colors text-left"
+                  >
+                    <span className="text-sm truncate flex-1 mr-2">
+                      {target.content.slice(0, 45)}{target.content.length > 45 ? "…" : ""}
+                    </span>
+                    <span className="text-xs font-mono text-muted-foreground shrink-0">
+                      ${(target.current_price ?? 1).toFixed(2)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
