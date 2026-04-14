@@ -14,16 +14,312 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activity_feed: {
+        Row: {
+          action: string
+          actor_name: string
+          actor_type: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          post_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_name: string
+          actor_type: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          post_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_name?: string
+          actor_type?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          post_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_feed_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clips: {
+        Row: {
+          clip_type: string
+          created_at: string
+          id: string
+          post_id: string
+          trigger_event: Json | null
+        }
+        Insert: {
+          clip_type: string
+          created_at?: string
+          id?: string
+          post_id: string
+          trigger_event?: Json | null
+        }
+        Update: {
+          clip_type?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          trigger_event?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clips_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          content: string
+          created_at: string
+          creator_id: string
+          current_price: number | null
+          id: string
+          is_active: boolean | null
+          price_change_pct: number | null
+          token_address: string | null
+          volume: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          creator_id: string
+          current_price?: number | null
+          id?: string
+          is_active?: boolean | null
+          price_change_pct?: number | null
+          token_address?: string | null
+          volume?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          creator_id?: string
+          current_price?: number | null
+          id?: string
+          is_active?: boolean | null
+          price_change_pct?: number | null
+          token_address?: string | null
+          volume?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_history: {
+        Row: {
+          id: string
+          post_id: string
+          price: number
+          recorded_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          price: number
+          recorded_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          price?: number
+          recorded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_history_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          total_pnl: number | null
+          username: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          total_pnl?: number | null
+          username?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          total_pnl?: number | null
+          username?: string | null
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
+      rotations: {
+        Row: {
+          amount: number
+          created_at: string
+          from_post_id: string
+          id: string
+          price_from: number
+          price_to: number
+          to_post_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          from_post_id: string
+          id?: string
+          price_from: number
+          price_to: number
+          to_post_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          from_post_id?: string
+          id?: string
+          price_from?: number
+          price_to?: number
+          to_post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotations_from_post_id_fkey"
+            columns: ["from_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rotations_to_post_id_fkey"
+            columns: ["to_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rotations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trades: {
+        Row: {
+          action: string
+          amount: number
+          created_at: string
+          id: string
+          post_id: string
+          price_at_trade: number
+          user_id: string
+        }
+        Insert: {
+          action: string
+          amount: number
+          created_at?: string
+          id?: string
+          post_id: string
+          price_at_trade: number
+          user_id: string
+        }
+        Update: {
+          action?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          post_id?: string
+          price_at_trade?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trades_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trades_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +446,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
