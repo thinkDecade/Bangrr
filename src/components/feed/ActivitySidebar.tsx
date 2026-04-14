@@ -75,6 +75,8 @@ export function ActivitySidebar() {
         return "🔴";
       case "DROPPED":
         return "🔥";
+      case "ROTATE":
+        return "🔄";
       default:
         return "·";
     }
