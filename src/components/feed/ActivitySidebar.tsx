@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ClipsFeed } from "./ClipsFeed";
+import { AgentWarsLeaderboard } from "./AgentWarsLeaderboard";
 import { formatDistanceToNow } from "date-fns";
 import type { Json } from "@/integrations/supabase/types";
 
