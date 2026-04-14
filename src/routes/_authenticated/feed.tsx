@@ -6,7 +6,7 @@ import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts, getPriceHistory } from "@/lib/feed-functions";
 import { runAgentCycle } from "@/lib/agent-engine";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Activity, Bot } from "lucide-react";
+import { ArrowLeft, Activity, Bot, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
