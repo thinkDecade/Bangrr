@@ -52,6 +52,33 @@ export type Database = {
           },
         ]
       }
+      agent_memory: {
+        Row: {
+          agent_name: string
+          content: Json
+          created_at: string
+          id: string
+          memory_type: string
+          updated_at: string
+        }
+        Insert: {
+          agent_name: string
+          content?: Json
+          created_at?: string
+          id?: string
+          memory_type: string
+          updated_at?: string
+        }
+        Update: {
+          agent_name?: string
+          content?: Json
+          created_at?: string
+          id?: string
+          memory_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clips: {
         Row: {
           clip_type: string
@@ -346,6 +373,10 @@ export type Database = {
       process_trade: {
         Args: { _action: string; _amount: number; _post_id: string }
         Returns: Json
+      }
+      upsert_agent_memory: {
+        Args: { _agent_name: string; _content: Json; _memory_type: string }
+        Returns: undefined
       }
     }
     Enums: {
