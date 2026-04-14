@@ -8,12 +8,11 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   vite: {
-    ssr: {
-      noExternal: [
-        "@particle-network/connectkit",
-        "@particle-network/authkit",
-        "ahooks",
-      ],
+    resolve: {
+      alias: {
+        // Stub out ahooks directory imports for SSR compatibility
+        "ahooks/es/useAsyncEffect": "ahooks/es/useAsyncEffect/index.js",
+      },
     },
   },
 });
