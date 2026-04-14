@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ConnectButtonLazy, WalletProfileSyncLazy } from "@/components/particle/ConnectButtonLazy";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/signup")({
   beforeLoad: ({ context }) => {
@@ -149,6 +150,32 @@ function SignupPage() {
             <span className="text-xs font-mono text-muted-foreground uppercase">or</span>
             <div className="h-px flex-1 bg-border" />
           </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={async () => {
+              setError("");
+              setLoading(true);
+              try {
+                const result = await lovable.auth.signInWithOAuth("google", {
+                  redirect_uri: window.location.origin,
+                });
+                if (result.error) {
+                  setError(`Google sign-in failed: ${result.error.message}`);
+                }
+                if (result.redirected) return;
+              } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : "Google sign-in failed");
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+            className="w-full font-mono uppercase tracking-wider"
+          >
+            SIGN UP WITH GOOGLE →
+          </Button>
 
           <div className="flex justify-center [&_button]:!w-full [&_button]:!font-mono [&_button]:!uppercase [&_button]:!tracking-wider">
             <Suspense fallback={<Button variant="outline" className="w-full" disabled>Loading wallet...</Button>}>
