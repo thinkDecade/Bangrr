@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ConnectButton } from "@particle-network/connectkit";
 
 export const Route = createFileRoute("/signup")({
   beforeLoad: ({ context }) => {
