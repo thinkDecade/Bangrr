@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ClipsFeed } from "./ClipsFeed";
 import { formatDistanceToNow } from "date-fns";
 import type { Json } from "@/integrations/supabase/types";
 
