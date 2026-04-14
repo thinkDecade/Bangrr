@@ -150,6 +150,7 @@ export const runAgentCycle = createServerFn({ method: "POST" })
         const parsed = result as {
           success: boolean;
           new_price?: number;
+          old_price?: number;
         };
 
         results.push({
@@ -160,6 +161,26 @@ export const runAgentCycle = createServerFn({ method: "POST" })
           success: parsed.success,
           newPrice: parsed.new_price,
         });
+
+        // Update agent memory via Unibase if trade succeeded
+        if (parsed.success) {
+          try {
+            await supabase.rpc("upsert_agent_memory", {
+              _agent_name: agent.name,
+              _memory_type: "last_trade",
+              _content: {
+                postId: post.id,
+                action: decision.action,
+                amount: decision.amount,
+                oldPrice: parsed.old_price ?? (post.current_price ?? 1),
+                newPrice: parsed.new_price ?? 1,
+                timestamp: new Date().toISOString(),
+              },
+            });
+          } catch (memErr) {
+            console.warn(`Agent ${agent.name} memory update failed:`, memErr);
+          }
+        }
 
         // Small delay between agent trades to spread them out
         await new Promise((r) => setTimeout(r, 200));
