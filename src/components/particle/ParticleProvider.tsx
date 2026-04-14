@@ -1,8 +1,8 @@
 import { ConnectKitProvider, createConfig } from "@particle-network/connectkit";
 import { authWalletConnectors } from "@particle-network/connectkit/auth";
 import { evmWalletConnectors } from "@particle-network/connectkit/evm";
-import { bscTestnet, bsc } from "@particle-network/connectkit/chains";
 import { wallet, EntryPosition } from "@particle-network/connectkit/wallet";
+import { bscTestnet, bsc } from "viem/chains";
 import { useEffect, useState, type ReactNode } from "react";
 
 const config = createConfig({
