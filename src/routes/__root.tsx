@@ -76,7 +76,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const auth = useAuth();
-  const router = Route.useRouter();
+  const router = useRouter();
 
   // Update router context when auth state changes
   useEffect(() => {
