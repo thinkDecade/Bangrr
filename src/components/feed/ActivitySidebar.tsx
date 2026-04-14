@@ -113,8 +113,6 @@ export function ActivitySidebar() {
               {getActorDisplay(entry)}{" "}
               <span className={`font-semibold ${getActionColor(entry.action)}`}>
                 {entry.action}
-              <span className={`font-semibold ${getActionColor(entry.action)}`}>
-                {entry.action}
               </span>
               {entry.metadata &&
                 typeof entry.metadata === "object" &&
