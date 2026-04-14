@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useServerFn } from "@tanstack/react-start";
 import { executeTrade, executeRotation } from "@/lib/feed-functions";
-import { TrendingUp, TrendingDown, RefreshCw } from "lucide-react";
+import { executeGaslessTrade } from "@/lib/pieverse-functions";
+import { generateNonce } from "@/lib/pieverse-contract";
+import { TrendingUp, TrendingDown, RefreshCw, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface TradeActionsProps {
@@ -25,8 +27,11 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
   const [selectedAmount, setSelectedAmount] = useState(1);
   const [showAmounts, setShowAmounts] = useState(false);
   const [showRotate, setShowRotate] = useState(false);
+  const [gasless, setGasless] = useState(false);
+
   const executeTradeRpc = useServerFn(executeTrade);
   const executeRotationRpc = useServerFn(executeRotation);
+  const executeGaslessRpc = useServerFn(executeGaslessTrade);
 
   const apeEstimate = estimateImpact(currentPrice, selectedAmount, 1);
   const exitEstimate = estimateImpact(currentPrice, selectedAmount, -1);
@@ -36,10 +41,31 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
   const handleTrade = async (action: "APE" | "EXIT") => {
     setLoading(action);
     try {
-      const result = await executeTradeRpc({
-        data: { postId, action, amount: selectedAmount },
-      });
-      if (result.success) {
+      let success = false;
+
+      if (gasless) {
+        // Gasless via Pieverse x402b
+        const nonce = generateNonce();
+        const result = await executeGaslessRpc({
+          data: {
+            postId,
+            action,
+            amount: selectedAmount,
+            gaslessSignature: "0x" + "00".repeat(65), // Mock — real flow signs EIP-712
+            from: "0x" + "00".repeat(20), // Mock — real flow uses connected wallet
+            nonce,
+          },
+        });
+        success = result.success;
+      } else {
+        // Standard trade
+        const result = await executeTradeRpc({
+          data: { postId, action, amount: selectedAmount },
+        });
+        success = result.success;
+      }
+
+      if (success) {
         setLastAction(action);
         setTimeout(() => setLastAction(null), 1500);
         onTradeComplete?.();
@@ -74,7 +100,7 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
 
   return (
     <div className="space-y-2 pt-1">
-      {/* Amount selector */}
+      {/* Amount selector + gasless toggle */}
       <div className="flex items-center gap-2">
         <button
           onClick={() => setShowAmounts(!showAmounts)}
@@ -111,6 +137,20 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
           )}
         </AnimatePresence>
 
+        {/* Gasless toggle */}
+        <button
+          onClick={() => setGasless(!gasless)}
+          className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-lg border transition-all ${
+            gasless
+              ? "bg-alert/15 text-alert border-alert/30"
+              : "bg-surface-elevated/30 text-muted-foreground/60 border-border/20 hover:text-muted-foreground"
+          }`}
+          title="Toggle gasless trading via Pieverse x402b"
+        >
+          <Zap className={`w-3 h-3 ${gasless ? "fill-alert" : ""}`} />
+          {gasless ? "GASLESS" : "GAS"}
+        </button>
+
         {!showAmounts && (
           <span className="text-[10px] font-mono text-muted-foreground/60">
             impact: <span className="text-volt">+{apePct}%</span> / <span className="text-signal">{exitPct}%</span>
@@ -132,6 +172,7 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
         >
           <TrendingUp className="w-4 h-4" />
           {loading === "APE" ? "..." : `APE ×${selectedAmount}`}
+          {gasless && <Zap className="w-3 h-3 fill-current" />}
         </Button>
         <Button
           size="sm"
@@ -145,6 +186,7 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
         >
           <TrendingDown className="w-4 h-4" />
           {loading === "EXIT" ? "..." : `EXIT ×${selectedAmount}`}
+          {gasless && <Zap className="w-3 h-3 fill-current" />}
         </Button>
         {rotateTargets.length > 0 && (
           <Button
@@ -162,6 +204,25 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
           </Button>
         )}
       </div>
+
+      {/* Gasless info banner */}
+      <AnimatePresence>
+        {gasless && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="rounded-lg border border-alert/20 bg-alert/5 px-3 py-1.5 flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5 text-alert fill-alert shrink-0" />
+              <p className="text-[10px] text-alert/80">
+                <span className="font-bold">Pieverse x402b</span> — gasless via pieUSD. No BNB needed for gas.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Rotation target picker */}
       <AnimatePresence>
