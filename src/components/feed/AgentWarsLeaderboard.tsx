@@ -45,12 +45,12 @@ export function AgentWarsLeaderboard() {
       )}
 
       {agents.map((agent, i) => (
+        <Link key={agent.name} to="/agent/$agentName" params={{ agentName: agent.name }}>
         <motion.div
-          key={agent.name}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.1 }}
-          className={`relative rounded-xl border bg-gradient-to-r p-3 ${rankColors[i] ?? "border-border/20 from-surface to-surface"}`}
+          className={`relative rounded-xl border bg-gradient-to-r p-3 cursor-pointer hover:brightness-110 transition ${rankColors[i] ?? "border-border/20 from-surface to-surface"}`}
         >
           {/* Rank + Agent name */}
           <div className="flex items-center justify-between mb-2">
