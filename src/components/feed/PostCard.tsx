@@ -3,6 +3,7 @@ import { Sparkline } from "./Sparkline";
 import { TradeActions } from "./TradeActions";
 import { TokenBadge } from "./TokenDeployStatus";
 import { SummonAgent } from "./SummonAgent";
+import { EarlyApeBadge } from "./EarlyApeBadge";
 import { formatDistanceToNow } from "date-fns";
 
 interface PostProfile {
@@ -24,11 +25,18 @@ export interface PostData {
   profiles: PostProfile | null;
 }
 
+interface EarlyApeNft {
+  token_id: number;
+  entry_price: number;
+  qualifying_price: number;
+}
+
 interface PostCardProps {
   post: PostData;
   priceHistory?: number[];
   onTradeComplete?: () => void;
   otherPosts?: Array<{ id: string; content: string; current_price: number | null }>;
+  earlyApeNft?: EarlyApeNft | null;
 }
 
 export function PostCard({ post, priceHistory, onTradeComplete, otherPosts }: PostCardProps) {
