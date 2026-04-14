@@ -57,7 +57,14 @@ export function ActivitySidebar() {
     }
   };
 
-  const getActionEmoji = (action: string) => {
+  const getActionEmoji = (action: string, actorType: string, actorName: string) => {
+    if (actorType === "agent") {
+      switch (actorName) {
+        case "RUSH": return "⚡";
+        case "ORACLE": return "👁";
+        case "MYTH": return "🌀";
+      }
+    }
     switch (action) {
       case "APE":
         return "🟢";
@@ -68,6 +75,21 @@ export function ActivitySidebar() {
       default:
         return "·";
     }
+  };
+
+  const getActorDisplay = (entry: ActivityEntry) => {
+    if (entry.actor_type === "agent") {
+      return (
+        <span className="font-bold text-hyper">
+          {entry.actor_name}
+        </span>
+      );
+    }
+    return (
+      <span className="text-muted-foreground">
+        {entry.actor_name.slice(0, 8)}…
+      </span>
+    );
   };
 
   return (
