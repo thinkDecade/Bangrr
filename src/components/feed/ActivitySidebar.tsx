@@ -104,6 +104,9 @@ export function ActivitySidebar() {
         Live Activity
       </h3>
       <div className="mb-4">
+        <AgentWarsLeaderboard />
+      </div>
+      <div className="mb-4">
         <ClipsFeed />
       </div>
       <div className="flex-1 overflow-y-auto space-y-2 scrollbar-thin">
