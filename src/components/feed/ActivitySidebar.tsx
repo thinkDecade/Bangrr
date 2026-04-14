@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ClipsFeed } from "./ClipsFeed";
 import { formatDistanceToNow } from "date-fns";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -97,6 +98,9 @@ export function ActivitySidebar() {
       <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">
         Live Activity
       </h3>
+      <div className="mb-4">
+        <ClipsFeed />
+      </div>
       <div className="flex-1 overflow-y-auto space-y-2 scrollbar-thin">
         {activities.length === 0 && (
           <p className="text-xs text-muted-foreground text-center py-8">
