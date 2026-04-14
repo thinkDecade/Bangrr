@@ -4,6 +4,7 @@ import { PostCard, type PostData } from "@/components/feed/PostCard";
 import { CreatePost } from "@/components/feed/CreatePost";
 import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts, getPriceHistory } from "@/lib/feed-functions";
+import { PriceTicker } from "@/components/feed/PriceTicker";
 import { runAgentCycle } from "@/lib/agent-engine";
 import { useState, useMemo } from "react";
 import { ArrowLeft, Activity, Bot, User } from "lucide-react";
@@ -111,6 +112,9 @@ function FeedPage() {
           </div>
         </div>
       </header>
+
+      {/* Real-time price ticker */}
+      <PriceTicker />
 
       {/* Main layout */}
       <div className="max-w-4xl mx-auto px-4 py-4">
