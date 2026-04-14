@@ -140,6 +140,12 @@ export const createPost = createServerFn({ method: "POST" })
       metadata: { content: data.content.slice(0, 50) },
     });
 
+    // Insert initial price history point
+    await supabase.from("price_history").insert({
+      post_id: post.id,
+      price: 1.0,
+    });
+
     return { post, error: null };
   });
 
@@ -153,66 +159,89 @@ export const executeTrade = createServerFn({ method: "POST" })
     })
   )
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { supabase } = context;
 
-    // Get current post
-    const { data: post, error: postError } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", data.postId)
-      .single();
+    // Call the atomic process_trade DB function
+    const { data: result, error } = await supabase.rpc("process_trade", {
+      _post_id: data.postId,
+      _action: data.action,
+      _amount: data.amount,
+    });
 
-    if (postError || !post) {
-      return { success: false, error: "Post not found" };
+    if (error) {
+      console.error("executeTrade RPC error:", error);
+      return { success: false, error: error.message, newPrice: 0, priceChangePct: 0, volume: 0 };
     }
 
-    const currentPrice = post.current_price ?? 1;
-    const priceImpact = data.action === "APE" ? 0.05 : -0.05;
-    const newPrice = Math.max(0.01, currentPrice * (1 + priceImpact * data.amount));
-    const pricePct = ((newPrice - currentPrice) / currentPrice) * 100;
+    const parsed = result as {
+      success: boolean;
+      error?: string;
+      old_price?: number;
+      new_price?: number;
+      price_change_pct?: number;
+      volume?: number;
+    };
 
-    // Insert trade
-    const { error: tradeError } = await supabase.from("trades").insert({
-      user_id: userId,
-      post_id: data.postId,
-      action: data.action,
-      amount: data.amount,
-      price_at_trade: currentPrice,
-    });
-
-    if (tradeError) {
-      console.error("trade insert error:", tradeError);
-      return { success: false, error: tradeError.message };
+    if (!parsed.success) {
+      return { success: false, error: parsed.error ?? "Trade failed", newPrice: 0, priceChangePct: 0, volume: 0 };
     }
-
-    // Update post price (only creator can update due to RLS, so use service role approach)
-    // Since RLS restricts UPDATE to creator, we'll insert price_history and activity
-    // The price update will be handled by the post creator's context
-    // For now, log the price history
-    await supabase.from("price_history").insert({
-      post_id: data.postId,
-      price: newPrice,
-    });
-
-    // Log activity
-    await supabase.from("activity_feed").insert({
-      actor_type: "user",
-      actor_name: userId,
-      action: data.action,
-      post_id: data.postId,
-      metadata: {
-        amount: data.amount,
-        price: currentPrice,
-        new_price: newPrice,
-      },
-    });
 
     return {
       success: true,
       error: null,
-      newPrice,
-      priceChangePct: pricePct,
+      newPrice: parsed.new_price ?? 0,
+      priceChangePct: parsed.price_change_pct ?? 0,
+      volume: parsed.volume ?? 0,
+      oldPrice: parsed.old_price ?? 0,
     };
+  });
+
+export const getPriceHistory = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      postIds: z.array(z.string().uuid()).min(1).max(50),
+      limit: z.number().min(1).max(50).default(20),
+    })
+  )
+  .handler(async ({ data }) => {
+    const { createClient } = await import("@supabase/supabase-js");
+
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+
+    if (!url || !key) {
+      return { priceHistory: {}, error: "Missing env vars" };
+    }
+
+    const supabase = createClient(url, key);
+
+    const { data: records, error } = await supabase
+      .from("price_history")
+      .select("post_id, price, recorded_at")
+      .in("post_id", data.postIds)
+      .order("recorded_at", { ascending: true })
+      .limit(data.limit * data.postIds.length);
+
+    if (error) {
+      console.error("getPriceHistory error:", error);
+      return { priceHistory: {}, error: error.message };
+    }
+
+    // Group by post_id, keep last N per post
+    const grouped: Record<string, number[]> = {};
+    for (const r of records ?? []) {
+      if (!grouped[r.post_id]) grouped[r.post_id] = [];
+      grouped[r.post_id].push(r.price);
+    }
+
+    // Trim to limit per post
+    for (const key of Object.keys(grouped)) {
+      if (grouped[key].length > data.limit) {
+        grouped[key] = grouped[key].slice(-data.limit);
+      }
+    }
+
+    return { priceHistory: grouped, error: null };
   });
 
 export const getActivityFeed = createServerFn({ method: "POST" })

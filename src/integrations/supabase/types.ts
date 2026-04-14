@@ -317,6 +317,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      process_trade: {
+        Args: { _action: string; _amount: number; _post_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
