@@ -15,6 +15,8 @@ interface Clip {
 const CLIP_CONFIG: Record<string, { emoji: string; label: string; color: string; bgColor: string }> = {
   APE_MOMENT: { emoji: "🦍", label: "APE MOMENT", color: "text-volt", bgColor: "bg-volt/10 border-volt/30" },
   ORACLE_CALL: { emoji: "👁", label: "ORACLE CALL", color: "text-hyper", bgColor: "bg-hyper/10 border-hyper/30" },
+  MYTH_DROP: { emoji: "🌀", label: "MYTH DROP", color: "text-cyan", bgColor: "bg-cyan/10 border-cyan/30" },
+  AGENT_WAR: { emoji: "⚔️", label: "AGENT WAR", color: "text-signal", bgColor: "bg-signal/10 border-signal/30" },
   VOLATILITY_SPIKE: { emoji: "📈", label: "VOLATILITY SPIKE", color: "text-alert", bgColor: "bg-alert/10 border-alert/30" },
 };
 
