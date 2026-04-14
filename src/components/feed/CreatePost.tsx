@@ -46,29 +46,8 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
         // Step 1: Sign wallet auth
         setDeployState({ status: "signing", message: "Requesting wallet signature..." });
 
-        // Check if wallet is available (viem/wagmi)
-        const { getConnectorClient } = await import("@wagmi/core");
-        const { createWalletClient, http } = await import("viem");
-        const { bscTestnet } = await import("viem/chains");
-
-        let walletClient: any;
-        try {
-          // Try wagmi connector first
-          const { getAccount, getPublicClient } = await import("@wagmi/core");
-          // Fallback: we'll skip if no wagmi config available
-          walletClient = null;
-        } catch {
-          walletClient = null;
-        }
-
-        // If no wallet connected, create post without token
-        if (!walletClient) {
-          setDeployState({
-            status: "confirmed",
-            message: "Post created! Connect wallet to deploy token later.",
-          });
-          return;
-        }
+        // For now, we proceed with simulated deployment
+        // Full integration would use Particle's wallet client for contract calls
 
         // Step 2: Prepare token parameters
         setDeployState({ status: "preparing", message: "Preparing token parameters..." });
