@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Sparkline } from "./Sparkline";
 import { TradeActions } from "./TradeActions";
 import { TokenBadge } from "./TokenDeployStatus";
+import { SummonAgent } from "./SummonAgent";
 import { formatDistanceToNow } from "date-fns";
 
 interface PostProfile {
@@ -106,6 +107,11 @@ export function PostCard({ post, priceHistory, onTradeComplete, otherPosts }: Po
         onTradeComplete={onTradeComplete}
         otherPosts={otherPosts}
       />
+
+      {/* Summon agent */}
+      <div className="flex justify-end pt-1">
+        <SummonAgent postId={post.id} onComplete={onTradeComplete} />
+      </div>
     </motion.div>
   );
 }

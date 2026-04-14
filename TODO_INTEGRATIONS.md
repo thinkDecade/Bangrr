@@ -16,24 +16,46 @@
 - ⬜ pieUSD deposit/redeem UI (wrap/unwrap USDT)
 
 ## 3. 🧠 Unibase Agent Memory — ✅ BUILT
-- ✅ `agent_memory` DB table with RLS (public read, service-role write via `upsert_agent_memory`)
-- ✅ `src/lib/unibase-memory.ts` — full memory layer with reputation, strategy, history types
-- ✅ `updateAgentMemory` server function — updates reputation, evolves strategy, appends history
-- ✅ `getAgentMemory` + `getAllAgentReputations` for profile pages and leaderboard
-- ✅ Agent cycle (`agent-engine.ts`) wired to persist memory after each trade
-- ✅ Agent profile page shows Unibase Memory section (reputation + learned strategy)
-- ✅ Best-effort sync to Unibase Membase Hub (decentralized backup)
+- ✅ `agent_memory` DB table with RLS
+- ✅ `src/lib/unibase-memory.ts` — full memory layer
+- ✅ Agent cycle wired to persist memory after each trade
+- ✅ Agent profile page shows Unibase Memory section
 - ⬜ Wire real MEMBASE_SECRET_KEY for on-chain identity registration
-- ⬜ Knowledge base integration (ChromaDB vector storage for agent learnings)
 
 ## 4. 📈 MYX Finance Leverage — ✅ BUILT (simulated protocol)
-- ✅ `leveraged_positions` DB table with RLS (user-scoped CRUD)
-- ✅ `open_leveraged_position` DB function — opens position, calculates liq price, applies leveraged impact
-- ✅ `check_liquidations` DB function — scans open positions and liquidates when price crosses liq threshold
-- ✅ `src/lib/leverage-functions.ts` — `openLeveragedPosition`, `getUserLeveragedPositions`, `checkLiquidations` server functions
-- ✅ Leverage selector (1×/2×/5×/10×) in TradeActions UI with MYX Finance info banner
-- ✅ Liquidation price display for APE and EXIT directions
-- ✅ Leveraged trades apply amplified market impact (amount × leverage × 0.3)
+- ✅ `leveraged_positions` DB table with RLS
+- ✅ `open_leveraged_position` + `check_liquidations` DB functions
+- ✅ Leverage selector (1×/2×/5×/10×) in TradeActions UI
+- ✅ Position management panel in sidebar with P&L, liq warnings
 - ⬜ Wire real MYX Finance protocol contracts
 - ⬜ Margin/collateral management UI
-- ⬜ Position management panel (close, add margin, view P&L)
+
+## 5. ⛩ Appease the Viral Agent Gods — ✅ BUILT
+- ✅ `agent_summons` DB table with RLS (user-scoped)
+- ✅ `src/lib/summon-functions.ts` — `summonAgent` + `getPostSummons` server functions
+- ✅ `src/components/feed/SummonAgent.tsx` — ritual UI with agent picker + amplify/protect/destroy
+- ✅ Agents auto-process summons (70% accept rate) and execute trades
+- ✅ Activity feed logs summon results (accepted/rejected)
+- ✅ Integrated into PostCard for every post
+
+## 6. ⚔️ Agent Wars — ✅ BUILT
+- ✅ `agent_wars` + `agent_war_votes` DB tables with RLS
+- ✅ `src/lib/agent-wars-functions.ts` — getActiveWars, voteInWar, startAgentWar, resolveAgentWar
+- ✅ `src/components/feed/AgentWarCard.tsx` — live war display with VS header, vote buttons, resolve
+- ✅ Agent engine auto-starts wars when agents trade opposite on same post
+- ✅ Community voting with percentage display
+- ✅ War resolution based on price movement direction
+
+## 7. 🎬 Clip Types — ✅ ALL WIRED
+- ✅ APE_MOMENT — large buy impact (≥8% or ×5+)
+- ✅ ORACLE_CALL — ORACLE trade with ≥6% impact
+- ✅ MYTH_DROP — MYTH trade with ≥7% impact or ×8+
+- ✅ AGENT_WAR — two agents trade opposite on same post within 60s
+- ✅ VOLATILITY_SPIKE — recent price range ≥15% of average
+
+## Remaining Real-Protocol Wiring (post-testnet)
+- ⬜ Four.meme real contract signing
+- ⬜ Pieverse real facilitator endpoint + EIP-712 wallet signing
+- ⬜ Unibase real MEMBASE_SECRET_KEY
+- ⬜ MYX Finance real contracts
+- ⬜ Early Ape NFT (BEP-721 auto-mint for first APE into 5×+ post)

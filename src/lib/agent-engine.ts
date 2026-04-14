@@ -162,6 +162,42 @@ export const runAgentCycle = createServerFn({ method: "POST" })
           newPrice: parsed.new_price,
         });
 
+        // Check if another agent traded opposite on same post → start Agent War
+        if (parsed.success) {
+          const oppositeAgent = results.find(
+            (r) =>
+              r.postId === post.id &&
+              r.agent !== agent.name &&
+              r.action !== decision.action &&
+              r.success
+          );
+          if (oppositeAgent) {
+            try {
+              // Check for existing active war on this post
+              const { data: existingWar } = await (supabase.from as any)("agent_wars")
+                .select("id")
+                .eq("post_id", post.id)
+                .eq("status", "active")
+                .limit(1);
+
+              if (!existingWar || existingWar.length === 0) {
+                await (supabase.from as any)("agent_wars").insert({
+                  post_id: post.id,
+                  challenger: agent.name,
+                  defender: oppositeAgent.agent,
+                  challenger_action: decision.action,
+                  defender_action: oppositeAgent.action,
+                  challenger_amount: decision.amount,
+                  defender_amount: oppositeAgent.amount,
+                  entry_price: parsed.old_price ?? (post.current_price ?? 1),
+                });
+              }
+            } catch (warErr) {
+              console.warn("Agent War creation failed:", warErr);
+            }
+          }
+        }
+
         // Update agent memory via Unibase if trade succeeded
         if (parsed.success) {
           try {
