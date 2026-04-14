@@ -39,7 +39,7 @@ function LoginPage() {
     setLoading(true);
     try {
       await auth.login(email, password);
-      navigate({ to: search.redirect as string });
+      await navigate({ to: search.redirect as string });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       const randomVoice = systemMessages[Math.floor(Math.random() * systemMessages.length)];
