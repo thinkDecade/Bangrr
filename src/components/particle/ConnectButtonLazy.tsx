@@ -5,3 +5,9 @@ export const ConnectButtonLazy = lazy(() =>
     default: m.ConnectButton,
   }))
 );
+
+export const WalletProfileSyncLazy = lazy(() =>
+  import("./WalletProfileSync").then((m) => ({
+    default: m.WalletProfileSync,
+  }))
+);
