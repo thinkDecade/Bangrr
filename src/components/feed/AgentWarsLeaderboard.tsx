@@ -113,6 +113,7 @@ export function AgentWarsLeaderboard() {
             Last: {agent.lastAction}
           </div>
         </motion.div>
+        </Link>
       ))}
 
       {!isLoading && agents.length > 0 && agents.every((a) => a.totalTrades === 0) && (
