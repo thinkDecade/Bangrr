@@ -35,6 +35,10 @@ function FeedPage() {
 
   const posts = (data?.posts ?? []) as PostData[];
   const postIds = useMemo(() => posts.map((p) => p.id), [posts]);
+  const otherPostsSummary = useMemo(
+    () => posts.map((p) => ({ id: p.id, content: p.content, current_price: p.current_price })),
+    [posts]
+  );
 
   // Fetch real price history for all visible posts
   const { data: priceData } = useQuery({
@@ -143,6 +147,7 @@ function FeedPage() {
                 post={post}
                 priceHistory={priceHistory[post.id]}
                 onTradeComplete={handleRefresh}
+                otherPosts={otherPostsSummary}
               />
             ))}
           </div>

@@ -53,6 +53,8 @@ export function ActivitySidebar() {
         return "text-signal";
       case "DROPPED":
         return "text-cyan";
+      case "ROTATE":
+        return "text-cyan";
       default:
         return "text-muted-foreground";
     }
@@ -73,6 +75,8 @@ export function ActivitySidebar() {
         return "🔴";
       case "DROPPED":
         return "🔥";
+      case "ROTATE":
+        return "🔄";
       default:
         return "·";
     }
