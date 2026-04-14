@@ -4,9 +4,11 @@ import { PostCard, type PostData } from "@/components/feed/PostCard";
 import { CreatePost } from "@/components/feed/CreatePost";
 import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
 import { getPosts, getPriceHistory } from "@/lib/feed-functions";
+import { runAgentCycle } from "@/lib/agent-engine";
 import { useState, useMemo } from "react";
-import { ArrowLeft, Activity } from "lucide-react";
+import { ArrowLeft, Activity, Bot } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/feed")({
   head: () => ({
@@ -24,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/feed")({
 function FeedPage() {
   const queryClient = useQueryClient();
   const [showSidebar, setShowSidebar] = useState(false);
+  const [agentsRunning, setAgentsRunning] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["feed-posts"],
@@ -47,6 +50,24 @@ function FeedPage() {
     queryClient.invalidateQueries({ queryKey: ["price-history"] });
   };
 
+  const handleRunAgents = async () => {
+    setAgentsRunning(true);
+    try {
+      const result = await runAgentCycle({ data: { maxPosts: 5 } });
+      if (result.error) {
+        toast.error(`Agent error: ${result.error}`);
+      } else {
+        const count = result.results.length;
+        toast.success(`⚡👁🌀 ${count} agent trades executed`);
+        handleRefresh();
+      }
+    } catch (e) {
+      toast.error("Failed to run agents");
+    } finally {
+      setAgentsRunning(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Top bar */}
@@ -62,12 +83,22 @@ function FeedPage() {
               LIVE
             </span>
           </div>
-          <button
-            onClick={() => setShowSidebar(!showSidebar)}
-            className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
-          >
-            <Activity className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleRunAgents}
+              disabled={agentsRunning}
+              className="flex items-center gap-1.5 text-xs font-bold text-hyper bg-hyper/10 hover:bg-hyper/20 px-3 py-1.5 rounded-full transition-colors disabled:opacity-50"
+            >
+              <Bot className={`w-3.5 h-3.5 ${agentsRunning ? "animate-spin" : ""}`} />
+              {agentsRunning ? "RUNNING…" : "RUN AGENTS"}
+            </button>
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="lg:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-surface transition-colors"
+            >
+              <Activity className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </header>
 
