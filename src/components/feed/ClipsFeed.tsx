@@ -105,6 +105,11 @@ export function ClipsFeed() {
                           ? String(event.actor_name)
                           : `${String(event.actor_name).slice(0, 6)}…`}
                       </span>
+                      <span className={event.actor_type === "agent" ? "text-hyper font-bold" : ""}>
+                        {event.actor_type === "agent"
+                          ? String(event.actor_name)
+                          : `${String(event.actor_name).slice(0, 6)}…`}
+                      </span>
                     </span>
                   )}
                   {event.amount && <span>×{String(event.amount)}</span>}
