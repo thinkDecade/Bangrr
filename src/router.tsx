@@ -69,13 +69,25 @@ export interface RouterContext {
   queryClient: QueryClient;
 }
 
+const defaultAuth: AuthState = {
+  isAuthenticated: false,
+  user: null,
+  session: null,
+  isLoading: true,
+  login: async () => {},
+  signup: async () => {},
+  logout: async () => {},
+  resetPassword: async () => {},
+  updatePassword: async () => {},
+};
+
 export const getRouter = () => {
   const queryClient = new QueryClient();
 
   const router = createRouter({
     routeTree,
     context: {
-      auth: undefined!,
+      auth: defaultAuth,
       queryClient,
     },
     scrollRestoration: true,
