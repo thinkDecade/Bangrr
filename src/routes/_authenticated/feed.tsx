@@ -3,8 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostCard, type PostData } from "@/components/feed/PostCard";
 import { CreatePost } from "@/components/feed/CreatePost";
 import { ActivitySidebar } from "@/components/feed/ActivitySidebar";
-import { getPosts } from "@/lib/feed-functions";
-import { useState } from "react";
+import { getPosts, getPriceHistory } from "@/lib/feed-functions";
+import { useState, useMemo } from "react";
 import { ArrowLeft, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -31,9 +31,20 @@ function FeedPage() {
   });
 
   const posts = (data?.posts ?? []) as PostData[];
+  const postIds = useMemo(() => posts.map((p) => p.id), [posts]);
+
+  // Fetch real price history for all visible posts
+  const { data: priceData } = useQuery({
+    queryKey: ["price-history", postIds],
+    queryFn: () => getPriceHistory({ data: { postIds, limit: 20 } }),
+    enabled: postIds.length > 0,
+  });
+
+  const priceHistory = (priceData?.priceHistory ?? {}) as Record<string, number[]>;
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
+    queryClient.invalidateQueries({ queryKey: ["price-history"] });
   };
 
   return (
@@ -93,6 +104,7 @@ function FeedPage() {
               <PostCard
                 key={post.id}
                 post={post}
+                priceHistory={priceHistory[post.id]}
                 onTradeComplete={handleRefresh}
               />
             ))}
