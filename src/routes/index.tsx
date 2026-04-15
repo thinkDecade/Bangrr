@@ -5,6 +5,7 @@ import { ConceptSlider } from "@/components/landing/ConceptSlider";
 import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
 import { AgentCards } from "@/components/landing/AgentCards";
 import { SystemVoiceCTA } from "@/components/landing/SystemVoiceCTA";
+import { FloatingPosts } from "@/components/landing/FloatingPosts";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
@@ -21,7 +22,8 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden relative">
+      <FloatingPosts />
       <HeroSection />
       <MockTicker />
       <ConceptSlider />
