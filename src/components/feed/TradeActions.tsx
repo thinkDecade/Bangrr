@@ -44,6 +44,7 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
   const executeRotationRpc = useServerFn(executeRotation);
   const executeGaslessRpc = useServerFn(executeGaslessTrade);
   const openLeverageRpc = useServerFn(openLeveragedPosition);
+  const { sign: signGasless, isReady: walletReady } = usePieverseSign();
 
   const apeEstimate = estimateImpact(currentPrice, selectedAmount, 1, leverage);
   const exitEstimate = estimateImpact(currentPrice, selectedAmount, -1, leverage);
