@@ -47,9 +47,9 @@ export function useFourMemeDeploy() {
       // Ensure on BSC Testnet (chain 97)
       if (primary.chainId !== bscTestnet.id) {
         try {
-          // viem walletClient supports switchChain
-          // @ts-expect-error — switchChain exists at runtime on EVM wallet client
-          await walletClient.switchChain({ id: bscTestnet.id });
+          await (walletClient as unknown as {
+            switchChain: (a: { id: number }) => Promise<void>;
+          }).switchChain({ id: bscTestnet.id });
         } catch (e) {
           throw new Error(
             `Switch your wallet to BSC Testnet (chain id ${bscTestnet.id})`
@@ -96,8 +96,8 @@ export function useFourMemeDeploy() {
           logs: receipt.logs,
         });
         if (events.length > 0) {
-          // @ts-expect-error — args.token is typed via ABI
-          tokenAddress = events[0].args.token as Address;
+          const ev = events[0] as unknown as { args: { token: Address } };
+          tokenAddress = ev.args.token;
         }
       } catch {
         // fallback: scan logs for first indexed address
