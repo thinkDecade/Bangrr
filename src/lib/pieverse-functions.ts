@@ -78,9 +78,13 @@ export const executeGaslessTrade = createServerFn({ method: "POST" })
       postId: z.string().uuid(),
       action: z.enum(["APE", "EXIT"]),
       amount: z.number().min(0.01).max(10000),
-      // Gasless signature data
-      gaslessSignature: z.string().min(1).max(200),
+      // Signed EIP-712 TransferWithAuthorization
+      gaslessSignature: z.string().min(1).max(200).regex(/^0x[a-fA-F0-9]+$/),
       from: z.string().min(1).max(42).regex(/^0x[a-fA-F0-9]{40}$/),
+      to: z.string().min(1).max(42).regex(/^0x[a-fA-F0-9]{40}$/).optional(),
+      value: z.string().min(1).max(78).optional(),
+      validAfter: z.number().int().min(0).optional(),
+      validBefore: z.number().int().min(0).optional(),
       nonce: z.string().min(1).max(66).regex(/^0x[a-fA-F0-9]{64}$/),
     })
   )

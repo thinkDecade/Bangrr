@@ -4,9 +4,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { executeTrade, executeRotation } from "@/lib/feed-functions";
 import { executeGaslessTrade } from "@/lib/pieverse-functions";
 import { openLeveragedPosition } from "@/lib/leverage-functions";
-import { generateNonce } from "@/lib/pieverse-contract";
+import { usePieverseSign } from "@/lib/use-pieverse-sign";
 import { TrendingUp, TrendingDown, RefreshCw, Zap, Target } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 interface TradeActionsProps {
   postId: string;
@@ -43,6 +44,7 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
   const executeRotationRpc = useServerFn(executeRotation);
   const executeGaslessRpc = useServerFn(executeGaslessTrade);
   const openLeverageRpc = useServerFn(openLeveragedPosition);
+  const { sign: signGasless, isReady: walletReady } = usePieverseSign();
 
   const apeEstimate = estimateImpact(currentPrice, selectedAmount, 1, leverage);
   const exitEstimate = estimateImpact(currentPrice, selectedAmount, -1, leverage);
@@ -63,18 +65,40 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
         });
         success = result.success;
       } else if (gasless) {
-        const nonce = generateNonce();
+        if (!walletReady) {
+          toast.error("Connect your wallet to use gasless trading");
+          setLoading(null);
+          return;
+        }
+        let signed;
+        try {
+          signed = await signGasless(selectedAmount);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Signature rejected";
+          toast.error(msg);
+          setLoading(null);
+          return;
+        }
         const result = await executeGaslessRpc({
           data: {
             postId,
             action,
             amount: selectedAmount,
-            gaslessSignature: "0x" + "00".repeat(65),
-            from: "0x" + "00".repeat(20),
-            nonce,
+            gaslessSignature: signed.signature,
+            from: signed.from,
+            to: signed.to,
+            value: signed.value,
+            validAfter: signed.validAfter,
+            validBefore: signed.validBefore,
+            nonce: signed.nonce,
           },
         });
         success = result.success;
+        if (success && result.relayTxHash) {
+          toast.success(`Gasless ${action} relayed`, {
+            description: `tx: ${result.relayTxHash.slice(0, 10)}…`,
+          });
+        }
       } else {
         const result = await executeTradeRpc({
           data: { postId, action, amount: selectedAmount },
