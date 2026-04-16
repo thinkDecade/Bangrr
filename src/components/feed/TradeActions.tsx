@@ -5,6 +5,7 @@ import { executeTrade, executeRotation } from "@/lib/feed-functions";
 import { executeGaslessTrade } from "@/lib/pieverse-functions";
 import { openLeveragedPosition } from "@/lib/leverage-functions";
 import { usePieverseSign } from "@/lib/use-pieverse-sign";
+import { useMyxLeverage } from "@/lib/use-myx-leverage";
 import { TrendingUp, TrendingDown, RefreshCw, Zap, Target } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -45,6 +46,7 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
   const executeGaslessRpc = useServerFn(executeGaslessTrade);
   const openLeverageRpc = useServerFn(openLeveragedPosition);
   const { sign: signGasless, isReady: walletReady } = usePieverseSign();
+  const { openPosition: openMyx, isReady: myxReady } = useMyxLeverage();
 
   const apeEstimate = estimateImpact(currentPrice, selectedAmount, 1, leverage);
   const exitEstimate = estimateImpact(currentPrice, selectedAmount, -1, leverage);
@@ -60,8 +62,23 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
       let success = false;
 
       if (leverage > 1) {
+        let myxData: { myxPositionId?: string; myxTxHash?: string } = {};
+        if (myxReady) {
+          try {
+            // Use a small fraction of selectedAmount as BNB collateral on testnet
+            const collateralBnb = Math.max(0.001, selectedAmount * 0.01);
+            const myx = await openMyx({ action, collateralBnb, leverage });
+            myxData = { myxPositionId: myx.positionId, myxTxHash: myx.txHash };
+            toast.success(`MYX ${leverage}× position opened`, {
+              description: `tx: ${myx.txHash.slice(0, 10)}…`,
+            });
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "MYX call failed";
+            toast.error(`MYX: ${msg}`, { description: "Falling back to synthetic position" });
+          }
+        }
         const result = await openLeverageRpc({
-          data: { postId, action, amount: selectedAmount, leverage },
+          data: { postId, action, amount: selectedAmount, leverage, ...myxData },
         });
         success = result.success;
       } else if (gasless) {
