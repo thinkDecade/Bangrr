@@ -10,6 +10,9 @@ export const openLeveragedPosition = createServerFn({ method: "POST" })
       action: z.enum(["APE", "EXIT"]),
       amount: z.number().min(0.01).max(10000),
       leverage: z.number().refine((v) => [2, 5, 10].includes(v), "Must be 2, 5, or 10"),
+      // On-chain MYX position metadata (optional — present when wallet signed)
+      myxPositionId: z.string().optional(),
+      myxTxHash: z.string().optional(),
     })
   )
   .handler(async ({ data, context }) => {
@@ -25,6 +28,22 @@ export const openLeveragedPosition = createServerFn({ method: "POST" })
     if (error) {
       console.error("openLeveragedPosition error:", error);
       return { success: false as const, error: error.message };
+    }
+
+    // Log MYX on-chain link in activity feed for transparency
+    if (data.myxTxHash && data.myxPositionId) {
+      await (supabase.from as any)("activity_feed").insert({
+        actor_type: "system",
+        actor_name: "MYX",
+        action: "ONCHAIN_OPEN",
+        post_id: data.postId,
+        metadata: {
+          tx_hash: data.myxTxHash,
+          position_id: data.myxPositionId,
+          leverage: data.leverage,
+          action: data.action,
+        },
+      });
     }
 
     const parsed = result as unknown as {
