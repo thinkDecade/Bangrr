@@ -4,9 +4,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { executeTrade, executeRotation } from "@/lib/feed-functions";
 import { executeGaslessTrade } from "@/lib/pieverse-functions";
 import { openLeveragedPosition } from "@/lib/leverage-functions";
-import { generateNonce } from "@/lib/pieverse-contract";
+import { usePieverseSign } from "@/lib/use-pieverse-sign";
 import { TrendingUp, TrendingDown, RefreshCw, Zap, Target } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 interface TradeActionsProps {
   postId: string;
