@@ -34,28 +34,26 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
   const prepareTokenRpc = useServerFn(prepareFourMemeToken);
   const confirmDeployRpc = useServerFn(confirmTokenDeployment);
 
+  const { deploy, isReady: walletReady } = useFourMemeDeploy();
+
   const deployToken = useCallback(
     async (postId: string, postContent: string) => {
       try {
-        // Step 1: Sign wallet auth
-        setDeployState({ status: "signing", message: "Requesting wallet signature..." });
+        if (!walletReady) {
+          setDeployState({
+            status: "failed",
+            message: "Connect a wallet to deploy a token. Post is live without one.",
+          });
+          return;
+        }
 
-        // For now, we proceed with simulated deployment
-        // Full integration would use Particle's wallet client for contract calls
-
-        // Step 2: Prepare token parameters
         setDeployState({ status: "preparing", message: "Preparing token parameters..." });
 
         const tokenName = generateTokenName(postContent);
         const tokenSymbol = generateTokenSymbol(postContent);
 
         const prepResult = await prepareTokenRpc({
-          data: {
-            postId,
-            name: tokenName,
-            symbol: tokenSymbol,
-            description: postContent,
-          },
+          data: { postId, name: tokenName, symbol: tokenSymbol, description: postContent },
         });
 
         if (!prepResult.success) {
@@ -67,51 +65,48 @@ export function CreatePost({ onPostCreated }: CreatePostProps) {
           return;
         }
 
-        // Step 3: Send transaction
         setDeployState({
-          status: "deploying",
-          message: `Deploying $${tokenSymbol} on BSC...`,
+          status: "signing",
+          message: `Sign in wallet to deploy $${tokenSymbol} (0.01 BNB fee)...`,
         });
 
-        // Note: In a full integration, we'd call the contract here via viem
-        // For now, we simulate the deployment
-        const mockTxHash = `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
-        const mockTokenAddress = `0x${Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`;
+        const { txHash, tokenAddress } = await deploy({
+          name: tokenName,
+          symbol: tokenSymbol,
+          description: postContent,
+          launchTime: prepResult.launchTime!,
+          nonce: prepResult.nonce!,
+        });
 
         setDeployState({
           status: "confirming",
-          message: "Waiting for block confirmation...",
-          txHash: mockTxHash,
+          message: "Tx submitted — waiting for confirmation...",
+          txHash,
         });
 
-        // Simulate confirmation delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Step 4: Confirm deployment
         await confirmDeployRpc({
-          data: {
-            postId,
-            tokenAddress: mockTokenAddress,
-            txHash: mockTxHash,
-          },
+          data: { postId, tokenAddress, txHash },
         });
 
         setDeployState({
           status: "confirmed",
-          message: `$${tokenSymbol} deployed successfully!`,
-          tokenAddress: mockTokenAddress,
-          txHash: mockTxHash,
+          message: `$${tokenSymbol} live on BSC Testnet!`,
+          tokenAddress,
+          txHash,
         });
       } catch (err) {
         console.error("Token deployment failed:", err);
+        const msg = err instanceof Error ? err.message : "Unknown error";
         setDeployState({
           status: "failed",
-          message: "Token deployment failed. Post was still created.",
-          error: err instanceof Error ? err.message : "Unknown error",
+          message: msg.includes("User rejected") || msg.includes("rejected")
+            ? "Wallet signature rejected. Post is live without a token."
+            : "Token deploy failed. Post is still live.",
+          error: msg,
         });
       }
     },
-    [prepareTokenRpc, confirmDeployRpc]
+    [prepareTokenRpc, confirmDeployRpc, deploy, walletReady]
   );
 
   const handleSubmit = async () => {
