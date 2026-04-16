@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { usePublicClient, useWallets } from "@particle-network/connectkit";
 import {
-  decodeEventLog,
   parseEventLogs,
   type Address,
   type Hash,

@@ -10,15 +10,9 @@ import {
 import { useServerFn } from "@tanstack/react-start";
 import { createPost } from "@/lib/feed-functions";
 import { prepareFourMemeToken, confirmTokenDeployment } from "@/lib/fourmeme-functions";
-import {
-  generateTokenName,
-  generateTokenSymbol,
-  CREATION_FEE_WEI,
-  FOUR_MEME_CONTRACTS,
-  TOKEN_MANAGER_ABI,
-  DEFAULT_TOTAL_SUPPLY,
-} from "@/lib/fourmeme-contract";
+import { generateTokenName, generateTokenSymbol } from "@/lib/fourmeme-contract";
 import type { DeploymentState } from "@/lib/fourmeme-contract";
+import { useFourMemeDeploy } from "@/lib/use-fourmeme-deploy";
 import { TokenDeployStatus } from "./TokenDeployStatus";
 import { Plus, Rocket } from "lucide-react";
 
