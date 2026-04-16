@@ -65,18 +65,40 @@ export function TradeActions({ postId, currentPrice = 1, onTradeComplete, otherP
         });
         success = result.success;
       } else if (gasless) {
-        const nonce = generateNonce();
+        if (!walletReady) {
+          toast.error("Connect your wallet to use gasless trading");
+          setLoading(null);
+          return;
+        }
+        let signed;
+        try {
+          signed = await signGasless(selectedAmount);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Signature rejected";
+          toast.error(msg);
+          setLoading(null);
+          return;
+        }
         const result = await executeGaslessRpc({
           data: {
             postId,
             action,
             amount: selectedAmount,
-            gaslessSignature: "0x" + "00".repeat(65),
-            from: "0x" + "00".repeat(20),
-            nonce,
+            gaslessSignature: signed.signature,
+            from: signed.from,
+            to: signed.to,
+            value: signed.value,
+            validAfter: signed.validAfter,
+            validBefore: signed.validBefore,
+            nonce: signed.nonce,
           },
         });
         success = result.success;
+        if (success && result.relayTxHash) {
+          toast.success(`Gasless ${action} relayed`, {
+            description: `tx: ${result.relayTxHash.slice(0, 10)}…`,
+          });
+        }
       } else {
         const result = await executeTradeRpc({
           data: { postId, action, amount: selectedAmount },
