@@ -256,28 +256,34 @@ export type Database = {
         Row: {
           entry_price: number
           id: string
+          mint_status: string
           minted_at: string
           post_id: string
           qualifying_price: number
           token_id: number | null
+          tx_hash: string | null
           user_id: string
         }
         Insert: {
           entry_price: number
           id?: string
+          mint_status?: string
           minted_at?: string
           post_id: string
           qualifying_price: number
           token_id?: number | null
+          tx_hash?: string | null
           user_id: string
         }
         Update: {
           entry_price?: number
           id?: string
+          mint_status?: string
           minted_at?: string
           post_id?: string
           qualifying_price?: number
           token_id?: number | null
+          tx_hash?: string | null
           user_id?: string
         }
         Relationships: [
@@ -596,6 +602,10 @@ export type Database = {
         Returns: undefined
       }
       check_liquidations: { Args: { _post_id: string }; Returns: Json }
+      confirm_early_ape_mint: {
+        Args: { _nft_id: string; _tx_hash: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
