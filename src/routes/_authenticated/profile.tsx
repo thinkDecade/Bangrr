@@ -166,6 +166,80 @@ function ProfilePage() {
               />
             </motion.div>
 
+            {/* Early Ape NFTs */}
+            {nfts.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="glass-card rounded-2xl p-5 border border-amber-500/20"
+              >
+                <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Award className="w-4 h-4" />
+                  Early Ape Badges
+                </h3>
+                <div className="space-y-3">
+                  {nfts.map((nft) => {
+                    const minted = nft.mint_status === "minted";
+                    const isClaiming = claimingId === nft.id;
+                    const multiplier =
+                      nft.entry_price > 0
+                        ? Math.round((nft.qualifying_price / nft.entry_price) * 10) / 10
+                        : 0;
+                    return (
+                      <div
+                        key={nft.id}
+                        className="flex items-center justify-between gap-3 py-2 border-b border-border/10 last:border-0"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500/30 to-amber-700/10 border border-amber-500/40 flex items-center justify-center text-amber-400 font-black text-sm shrink-0">
+                            #{nft.token_id ?? "—"}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold">
+                              Early Ape {multiplier}×
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              entry {Number(nft.entry_price).toFixed(3)} → {Number(nft.qualifying_price).toFixed(3)}
+                            </p>
+                          </div>
+                        </div>
+                        {minted ? (
+                          <a
+                            href={`https://testnet.bscscan.com/tx/${nft.tx_hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg bg-volt/10 text-volt hover:bg-volt/20 transition-colors"
+                          >
+                            On-chain <ExternalLink className="w-3 h-3" />
+                          </a>
+                        ) : (
+                          <button
+                            onClick={() => handleClaim(nft)}
+                            disabled={isClaiming}
+                            className="shrink-0 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 transition-colors disabled:opacity-50"
+                          >
+                            {isClaiming ? (
+                              <>
+                                <Loader2 className="w-3 h-3 animate-spin" /> Claiming
+                              </>
+                            ) : (
+                              "Claim on-chain"
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {!walletReady && nfts.some((n) => n.mint_status !== "minted") && (
+                  <p className="text-[10px] text-muted-foreground/70 mt-3 text-center">
+                    Connect wallet on BSC Testnet to claim
+                  </p>
+                )}
+              </motion.div>
+            )}
+
             {/* Positions */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
