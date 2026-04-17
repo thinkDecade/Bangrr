@@ -1,9 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProfile, getUserTrades } from "@/lib/profile-functions";
-import { ArrowLeft, Wallet, TrendingUp, TrendingDown, BarChart3, Clock } from "lucide-react";
+import { getMyEarlyApeNfts, confirmEarlyApeMint } from "@/lib/early-ape-functions";
+import { useEarlyApeMint } from "@/lib/use-early-ape-mint";
+import {
+  ArrowLeft,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  Clock,
+  Award,
+  ExternalLink,
+  Loader2,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
