@@ -1,9 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProfile, getUserTrades } from "@/lib/profile-functions";
-import { ArrowLeft, Wallet, TrendingUp, TrendingDown, BarChart3, Clock } from "lucide-react";
+import { getMyEarlyApeNfts, confirmEarlyApeMint } from "@/lib/early-ape-functions";
+import { useEarlyApeMint } from "@/lib/use-early-ape-mint";
+import {
+  ArrowLeft,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  Clock,
+  Award,
+  ExternalLink,
+  Loader2,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -26,12 +40,53 @@ function ProfilePage() {
     queryFn: () => getUserTrades(),
   });
 
+  const { data: nftData } = useQuery({
+    queryKey: ["my-early-ape-nfts"],
+    queryFn: () => getMyEarlyApeNfts(),
+  });
+
+  const queryClient = useQueryClient();
+  const { mint, isReady: walletReady } = useEarlyApeMint();
+  const [claimingId, setClaimingId] = useState<string | null>(null);
+
   const profile = profileData?.profile;
   const trades = tradeData?.trades ?? [];
   const positions = tradeData?.positions ?? [];
   const totalPnl = tradeData?.totalPnl ?? 0;
+  const nfts = nftData?.nfts ?? [];
 
   const isLoading = profileLoading || tradesLoading;
+
+  const handleClaim = async (nft: { id: string; token_id: number | null }) => {
+    if (!walletReady) {
+      toast.error("Connect your wallet to claim on BSC Testnet");
+      return;
+    }
+    if (nft.token_id == null) {
+      toast.error("Token ID missing");
+      return;
+    }
+    setClaimingId(nft.id);
+    try {
+      const result = await mint({ tokenId: nft.token_id });
+      const confirm = await confirmEarlyApeMint({
+        data: { nftId: nft.id, txHash: result.txHash },
+      });
+      if (!confirm.success) {
+        toast.error(confirm.error ?? "Mint confirmation failed");
+        return;
+      }
+      toast.success(`Early Ape #${nft.token_id} claimed`, {
+        description: `tx ${result.txHash.slice(0, 10)}…`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["my-early-ape-nfts"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Mint failed");
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -110,6 +165,87 @@ function ProfilePage() {
                 color="text-hyper"
               />
             </motion.div>
+
+            {/* Early Ape NFTs */}
+            {nfts.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="glass-card rounded-2xl p-5 border border-amber-500/20"
+              >
+                <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Award className="w-4 h-4" />
+                  Early Ape Badges
+                </h3>
+                <div className="space-y-3">
+                  {nfts.map((nft: {
+                    id: string;
+                    token_id: number | null;
+                    entry_price: number;
+                    qualifying_price: number;
+                    mint_status: string;
+                    tx_hash: string | null;
+                  }) => {
+                    const minted = nft.mint_status === "minted";
+                    const isClaiming = claimingId === nft.id;
+                    const multiplier =
+                      nft.entry_price > 0
+                        ? Math.round((nft.qualifying_price / nft.entry_price) * 10) / 10
+                        : 0;
+                    return (
+                      <div
+                        key={nft.id}
+                        className="flex items-center justify-between gap-3 py-2 border-b border-border/10 last:border-0"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500/30 to-amber-700/10 border border-amber-500/40 flex items-center justify-center text-amber-400 font-black text-sm shrink-0">
+                            #{nft.token_id ?? "—"}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold">
+                              Early Ape {multiplier}×
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              entry {Number(nft.entry_price).toFixed(3)} → {Number(nft.qualifying_price).toFixed(3)}
+                            </p>
+                          </div>
+                        </div>
+                        {minted ? (
+                          <a
+                            href={`https://testnet.bscscan.com/tx/${nft.tx_hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg bg-volt/10 text-volt hover:bg-volt/20 transition-colors"
+                          >
+                            On-chain <ExternalLink className="w-3 h-3" />
+                          </a>
+                        ) : (
+                          <button
+                            onClick={() => handleClaim(nft)}
+                            disabled={isClaiming}
+                            className="shrink-0 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 transition-colors disabled:opacity-50"
+                          >
+                            {isClaiming ? (
+                              <>
+                                <Loader2 className="w-3 h-3 animate-spin" /> Claiming
+                              </>
+                            ) : (
+                              "Claim on-chain"
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {!walletReady && nfts.some((n: { mint_status: string }) => n.mint_status !== "minted") && (
+                  <p className="text-[10px] text-muted-foreground/70 mt-3 text-center">
+                    Connect wallet on BSC Testnet to claim
+                  </p>
+                )}
+              </motion.div>
+            )}
 
             {/* Positions */}
             <motion.div
