@@ -337,24 +337,24 @@ async function syncToMembaseHub(
   agentName: string,
   reputation: AgentReputation
 ): Promise<void> {
+  const secretKey = process.env.MEMBASE_SECRET_KEY;
+
+  // No key configured → skip hub sync entirely. Operational DB remains source of truth.
+  // When MEMBASE_SECRET_KEY is added later, signed sync will activate automatically.
+  if (!secretKey) return;
+
   try {
-    const secretKey = process.env.MEMBASE_SECRET_KEY;
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-
-    // Sign agent identity for on-chain attribution if secret is configured.
-    // Membase Hub treats signed payloads as verifiably owned by this agent wallet.
-    if (secretKey) {
-      headers["X-Membase-Auth"] = `Bearer ${secretKey}`;
-      headers["X-Agent-Identity"] = `bangrr-agent-${agentName.toLowerCase()}`;
-    }
-
     const response = await fetch(`${MEMBASE_HUB}/api/v1/memory`, {
       method: "POST",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Membase-Auth": `Bearer ${secretKey}`,
+        "X-Agent-Identity": `bangrr-agent-${agentName.toLowerCase()}`,
+      },
       body: JSON.stringify({
         owner: `bangrr-agent-${agentName.toLowerCase()}`,
         filename: `reputation-${Date.now()}`,
-        signed: Boolean(secretKey),
+        signed: true,
         data: JSON.stringify({
           agent: agentName,
           type: "reputation",
