@@ -179,7 +179,14 @@ function ProfilePage() {
                   Early Ape Badges
                 </h3>
                 <div className="space-y-3">
-                  {nfts.map((nft) => {
+                  {nfts.map((nft: {
+                    id: string;
+                    token_id: number | null;
+                    entry_price: number;
+                    qualifying_price: number;
+                    mint_status: string;
+                    tx_hash: string | null;
+                  }) => {
                     const minted = nft.mint_status === "minted";
                     const isClaiming = claimingId === nft.id;
                     const multiplier =
@@ -232,7 +239,7 @@ function ProfilePage() {
                     );
                   })}
                 </div>
-                {!walletReady && nfts.some((n) => n.mint_status !== "minted") && (
+                {!walletReady && nfts.some((n: { mint_status: string }) => n.mint_status !== "minted") && (
                   <p className="text-[10px] text-muted-foreground/70 mt-3 text-center">
                     Connect wallet on BSC Testnet to claim
                   </p>
