@@ -40,12 +40,53 @@ function ProfilePage() {
     queryFn: () => getUserTrades(),
   });
 
+  const { data: nftData } = useQuery({
+    queryKey: ["my-early-ape-nfts"],
+    queryFn: () => getMyEarlyApeNfts(),
+  });
+
+  const queryClient = useQueryClient();
+  const { mint, isReady: walletReady } = useEarlyApeMint();
+  const [claimingId, setClaimingId] = useState<string | null>(null);
+
   const profile = profileData?.profile;
   const trades = tradeData?.trades ?? [];
   const positions = tradeData?.positions ?? [];
   const totalPnl = tradeData?.totalPnl ?? 0;
+  const nfts = nftData?.nfts ?? [];
 
   const isLoading = profileLoading || tradesLoading;
+
+  const handleClaim = async (nft: { id: string; token_id: number | null }) => {
+    if (!walletReady) {
+      toast.error("Connect your wallet to claim on BSC Testnet");
+      return;
+    }
+    if (nft.token_id == null) {
+      toast.error("Token ID missing");
+      return;
+    }
+    setClaimingId(nft.id);
+    try {
+      const result = await mint({ tokenId: nft.token_id });
+      const confirm = await confirmEarlyApeMint({
+        data: { nftId: nft.id, txHash: result.txHash },
+      });
+      if (!confirm.success) {
+        toast.error(confirm.error ?? "Mint confirmation failed");
+        return;
+      }
+      toast.success(`Early Ape #${nft.token_id} claimed`, {
+        description: `tx ${result.txHash.slice(0, 10)}…`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["my-early-ape-nfts"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Mint failed");
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
