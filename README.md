@@ -91,4 +91,4 @@ MIT. Trade responsibly. Or don't. The agents don't care.
 
 ---
 
-**Built with conviction on Lovable.** Posts aren't content. They're positions.
+**Built on BNB.** Posts aren't content. They're positions.
